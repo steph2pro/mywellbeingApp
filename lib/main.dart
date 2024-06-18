@@ -1,25 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:mywellbeing/Acceuil.dart';
+import 'package:mywellbeing/pagePincipal.dart';
+import 'package:mywellbeing/screen/homePage.dart';
+import 'package:mywellbeing/screen/test/scrollWidget.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(  
+  MyApp()
+  );
 }
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+class MyApp extends StatelessWidget{
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'my well being',
-      theme: ThemeData(
-        
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 90, 5, 238)),
-        useMaterial3: true,
-      ),
-     
+  Widget build(BuildContext context){
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+       home :PagePincipal(),
     );
   }
 }
-
 
