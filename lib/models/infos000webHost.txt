@@ -1,0 +1,18 @@
+****compte gmail****
+email:stekamastateamstephpfe@gmail.com
+passWord:St3ph@n3Ets@T3@mP0urL3urPF3!
+
+****cration du site web *********
+nom:mywellbeing.000webhostapp.com
+passWord:St3ph@n3Ets@T3@mP0urL3urPF3!
+
+
+******interface pour l'administration de la bd*********
+lien:https://panel.000webhost.com/dashboard/mywellbeing/databases
+
+
+****infos de la base de donnee****
+lien: https://databases-auth.000webhost.com/index.php
+nom bd:id22366769_mywellbeing_bd
+username:id22366769_teamsteph
+password:@teamSteph2024
