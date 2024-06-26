@@ -3,6 +3,7 @@ import 'package:mywellbeing/views/programme/recetteAdd.dart';
 import 'package:mywellbeing/views/programme/rationAdd.dart';
 import 'package:mywellbeing/views/programme/exerciceAdd.dart';
 import 'package:mywellbeing/views/programme/seanceAdd.dart';
+import 'package:mywellbeing/views/widgets/navBarWidget.dart';
 
 // Page affichant la liste des programmes
 class ChoixElement extends StatefulWidget {
@@ -44,7 +45,7 @@ class _ChoixElementState extends State<ChoixElement> {
                   ),
                   ),
                   ),
-                  profilPlus
+                  NavBarWidget()
               ]
             ),
         iconTheme: IconThemeData(color: Colors.white),
@@ -113,32 +114,3 @@ class _ChoixElementState extends State<ChoixElement> {
     );
   }
 }
-
-Widget profilPlus = Container(
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundImage: AssetImage('assets/images/profile.png'),
-            radius: 20,
-          ),
-          SizedBox(width: 10),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              // Action à effectuer lors du clic sur l'icône de recherche
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.notifications),
-            onPressed: () {
-              // Action à effectuer lors du clic sur l'icône de notification
-            },
-          ),
-        ],
-      ),
-    );
-
-
-
-
-    

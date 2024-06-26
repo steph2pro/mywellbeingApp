@@ -76,7 +76,17 @@ CREATE TABLE groupes_discussion (
     objectif VARCHAR(255) NULL,
     photo VARCHAR(255) NULL
 );
+-- -----------------------------------------------------------------------------
+--       TABLE : appartenir
+-- -----------------------------------------------------------------------------
 
+CREATE TABLE appartenir (
+    id_utilisateur INTEGER NOT NULL,
+    id_groupes_discussion INTEGER NOT NULL,
+    PRIMARY KEY (id_utilisateur, id_groupes_discussion),
+    FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur),
+    FOREIGN KEY (id_groupes_discussion) REFERENCES groupes_discussion(id_groupes_discussion)
+);
 -- -----------------------------------------------------------------------------
 --       TABLE : message
 -- -----------------------------------------------------------------------------
@@ -181,14 +191,3 @@ CREATE TABLE constituer (
     FOREIGN KEY (id_exercice) REFERENCES exercice(id_exercice)
 );
 
--- -----------------------------------------------------------------------------
---       TABLE : appartenir
--- -----------------------------------------------------------------------------
-
-CREATE TABLE appartenir (
-    id_utilisateur INTEGER NOT NULL,
-    id_groupes_discussion INTEGER NOT NULL,
-    PRIMARY KEY (id_utilisateur, id_groupes_discussion),
-    FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur),
-    FOREIGN KEY (id_groupes_discussion) REFERENCES groupes_discussion(id_groupes_discussion)
-);

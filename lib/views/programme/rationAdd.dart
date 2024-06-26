@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywellbeing/views/widgets/navBarWidget.dart';
 
 
 class RationAdd extends StatefulWidget {
@@ -35,7 +36,7 @@ class _RationAddState extends State<RationAdd> {
                   ),
                   ),
                   ),
-                  profilPlus
+                  NavBarWidget()
               ]
             ),
         iconTheme: IconThemeData(color: Colors.white),
@@ -178,26 +179,3 @@ class _RationAddState extends State<RationAdd> {
   }
   
 }
-Widget profilPlus = Container(
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundImage: AssetImage('assets/images/profile.png'),
-            radius: 20,
-          ),
-          SizedBox(width: 10),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              // Action à effectuer lors du clic sur l'icône de recherche
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.notifications),
-            onPressed: () {
-              // Action à effectuer lors du clic sur l'icône de notification
-            },
-          ),
-        ],
-      ),
-    );

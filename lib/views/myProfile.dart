@@ -53,6 +53,19 @@ class MyProfile extends StatelessWidget{
 @override
    Widget build(BuildContext context){
     return   Scaffold(
+      appBar: AppBar(
+        title: Text('vos informations personel',
+           style:TextStyle(color: Colors.white,
+                    fontFamily: 'Montseraat',
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    
+            ),
+            textAlign: TextAlign.center,
+        ),
+        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: Colors.blueAccent[400],
+      ),
       backgroundColor: const Color(0xFF7165D6),
       body: SingleChildScrollView(
         child: Column(
