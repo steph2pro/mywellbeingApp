@@ -1,5 +1,5 @@
 <?php
-
+require_once "Database.php";
 class ProfessionnelDeSante {
     private $conn;
     private $table_name = "professionnel_de_sante";

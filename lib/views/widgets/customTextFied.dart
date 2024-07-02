@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 class CustomTextFied {
   final String title;
   final String placeholder;
@@ -6,8 +7,10 @@ class CustomTextFied {
   String err; 
   String _value='';
   CustomTextFied({this.title='',this.placeholder='',this.ispass=false,this.err='veillez remplir ce champ'});
+  TextEditingController controller = new TextEditingController();
 TextFormField textfrofield(){
   return TextFormField(
+    controller: controller,
     onChanged: (e){
       _value = e;
     },

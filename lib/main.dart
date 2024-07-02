@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mywellbeing/views/Acceuil.dart';
 import 'package:mywellbeing/views/pagePincipal.dart';
+import 'package:mywellbeing/views/chargement.dart';
+import 'package:mywellbeing/views/uploadImage.dart';
 
 void main() {
   runApp(  

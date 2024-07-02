@@ -1,5 +1,5 @@
 <?php
-
+require_once "Database.php";
 class GroupesDiscussion {
     private $conn;
     private $table_name = "groupes_discussion";

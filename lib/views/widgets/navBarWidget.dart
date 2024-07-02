@@ -3,6 +3,7 @@ import 'package:petitparser/parser.dart';
 import '../notification.dart';
 import '../myProfile.dart';
 import '../recherche.dart';
+import '../../models/userModel/userModel.dart';
 class NavBarWidget extends StatelessWidget {
   const NavBarWidget({super.key});
 Widget build(BuildContext context) {
@@ -11,6 +12,7 @@ Widget build(BuildContext context) {
                 children: [
                   GestureDetector(
                     onTap: () {
+                      UserModel.getUser();
                       // Action à effectuer lorsque tu cliques sur l'image
                       Navigator.push(
                         context,

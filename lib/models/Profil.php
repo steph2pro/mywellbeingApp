@@ -1,5 +1,5 @@
 <?php
-
+require_once "Database.php";
 class Profil {
     private $conn;
     private $table_name = "profil";

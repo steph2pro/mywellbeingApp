@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mywellbeing/models/userModel/userModel.dart';
 import 'package:mywellbeing/views/authantification/login.dart';
 import 'package:mywellbeing/views/authantification/register.dart';
+import 'package:mywellbeing/views/pagePincipal.dart';
 import 'package:mywellbeing/views/profil.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,7 +14,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool visible = true;
-
+  //variable pour verifier si la connection est effectuer
+  bool login=false;
   void toggle() {
     setState(() {
       visible = !visible;
@@ -25,7 +28,32 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(builder: (context) => Profil()),
     );
   }
-
+// methode pour modifier l'eta de la variable login
+isLogin(){
+  setState(() {
+    login=!login;
+  });
+}
+//fonction pour verifier si l;utilisateur est bel et bien connecter ou pas
+isconnected() async{
+await UserModel.getUser();
+if(UserModel.sessionUser != null){
+  setState(() {
+    login=true;
+  });
+}else{
+  setState(() {
+    login=false;
+  });
+}
+}
+@override
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isconnected();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +73,9 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           Expanded(
-            child: visible ? Login(toggle: toggle) : Register(toggle: toggle),
+            //test si la connection est effectuer pour afficher la page necessaire
+            child: login? PagePincipal()
+            :visible ? Login(toggle: toggle,login: isLogin) : Register(toggle: toggle),
           ),
          
         ],

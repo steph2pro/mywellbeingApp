@@ -1,14 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mywellbeing/models/userModel/userModel.dart';
 import 'package:mywellbeing/views/pagePincipal.dart';
 import 'package:mywellbeing/views/widgets/customTextFied.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:mywellbeing/views/widgets/loading.dart';
 class Login extends StatefulWidget {
   //const Login({super.key});
   //fonction visible pour basculer de la page Register a la page register
- final VoidCallback toggle;
+ final VoidCallback toggle,login;
+// final VoidCallback toggle;
 
-  Login({required this.toggle});
+  Login({required this.toggle,required this.login});
 
   // final Function visible;
   // Login(this.visible);
@@ -17,8 +22,59 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+   String erreur="";
+   bool _loading=false;
+  void login(String nom, String pass, String action) async {
+    setState((){
+      erreur="";
+      _loading=true;
+    });
+  try { 
+    //on utilise la methode post pour envoyer les donne 
+    //on entre d'adord l'url et par la suite les donne a envoyer sous forme de cle-valeur notament dans le body
+    final response= await http.post(Uri.parse("https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/userViewmodel.php"),body: {
+      "nom":nom,
+      "pass":pass,
+      "action":action,
+    });
+    //on fait une condition pour voir si la requette as ete executer normalement
+    if (response.statusCode==200) {
+      var data=jsonDecode(response.body);
+      print(data);
+      var result=data['data'];
+      int succes=result["success"];
+      print(succes);
+      if(succes==1){
+        setState((){
+          _loading=false;
+          erreur=result["message"];
+          print(result["user"]);
+          var user=result["user"];
+          UserModel.saveUser(UserModel.fromJson(user));
+          //on deporte la fonction login et l'appel ici
+          widget.login.call();
+        });
+      }else{
+         setState((){
+          print(result["message"]);
+          erreur=result["message"];
+          _loading=false;
+        });
+
+      }
+    } else {
+        print("Erreur de connexion1 : ${response.statusCode}");
+      print("error: ${response.body}");
+        
+    }
+  } catch (error) {
+    print("Erreur de connexion2 : $error");
+    
+  }
+}
+
   //instanciationde l'objet pour faire les inputs
-  CustomTextFied emailText=new CustomTextFied(
+  CustomTextFied nomText=new CustomTextFied(
     title: "nom d'utilisateur",
     placeholder: "entrez votre nom d'utilisateur"
   );
@@ -31,9 +87,10 @@ class _LoginState extends State<Login> {
   final _key = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    emailText.err="entrez votre nom d'utilisateur";
+    nomText.err="entrez votre nom d'utilisateur";
     passText.err="entrez votre mot de pass";
-    return Scaffold(
+    return _loading ? Loading()
+    :Scaffold(
       body: Center( 
         child:  SingleChildScrollView(
         child: Container(
@@ -45,20 +102,21 @@ class _LoginState extends State<Login> {
           children:[
           Text('Connexion',textAlign: TextAlign.center,style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold,color: Colors.blueAccent[400]),),
           SizedBox(height: 30,),
-          emailText.textfrofield(),
+          nomText.textfrofield(),
           //Text('PassWord',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold,color: Colors.blueAccent[400]),),
           SizedBox(height: 15,),
           passText.textfrofield(),
           SizedBox(height: 15,),
           ElevatedButton(
             onPressed: () {
-              // if (_key.currentState?.validate() ?? false) {
-              //   print(emailText.value);
-              //   print("ok");
-              // } else {
+              if (_key.currentState?.validate() ?? false) {
                 
-              // }
-                Navigator.push(context, MaterialPageRoute(builder: (context) => PagePincipal()));
+                login(nomText.value, passText.value,"login");
+              } else {
+                
+              }
+                //Navigator.push(context, MaterialPageRoute(builder: (context) => PagePincipal()));
+                 //print("ok");
 
             },
             child: Text('se connecter',style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
@@ -70,7 +128,7 @@ class _LoginState extends State<Login> {
             ),
            ),
           ),
-          Column(
+         Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text("vous n'avez pas de compte? "),
@@ -79,8 +137,19 @@ class _LoginState extends State<Login> {
               child: Text('creer un compte', style: TextStyle(fontSize: 15, color:Colors.blueAccent),),
             ),
             ],
-          )
-        ],),
+          ),
+        SizedBox(height: 30,),
+        Text(
+              erreur,
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            )
+        ],
+        ),
             )
         )
       ),)

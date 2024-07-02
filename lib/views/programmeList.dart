@@ -1,57 +1,103 @@
 import 'package:flutter/material.dart';
 import 'package:mywellbeing/views/DailyDietView.dart';
 import 'package:mywellbeing/views/programme/choixElement.dart';
-import 'package:mywellbeing/views/programme/programmeAdd.dart'; // Importer la classe DailyDietView du fichier externe
+import 'package:mywellbeing/views/programme/programmeAdd.dart';
 
-// Modèle de données pour représenter un programme
 class Program {
   final String name;
   final String imageUrl;
   final String description;
+  final String type;
 
   Program({
     required this.name,
     required this.imageUrl,
     required this.description,
+    required this.type,
   });
 }
 
-// Page affichant la liste des programmes
-class ProgrammeList extends StatelessWidget {
+class ProgrammeList extends StatefulWidget {
+  @override
+  _ProgrammeListState createState() => _ProgrammeListState();
+}
+
+class _ProgrammeListState extends State<ProgrammeList> {
   final List<Program> programs = [
     Program(
-      name: "Programme de regime",
-      imageUrl: "assets/images/regime.jpg", // URL en tant que ressource locale
-      description: "Perder jusqu'a 7kg en 1mois",
+      name: "Programme de musculation",
+      imageUrl: "assets/images/sport.jpg",
+      description: "Augmentez votre force et développez votre masse musculaire.",
+      type: "Sportif",
     ),
     Program(
-      name: "Programme sportif",
-      imageUrl: "assets/images/sport.jpg", // URL en tant que ressource locale
-      description: "bouger et maintenez vous en forme",
+      name: "Programme de course à pied",
+      imageUrl: "assets/images/sport.jpg",
+      description: "Améliorez votre endurance et brûlez des calories en courant.",
+      type: "Sportif",
     ),
     Program(
-      name: "Programme de regime",
-      imageUrl: "assets/images/regime.jpg", // URL en tant que ressource locale
-      description: "Perder jusqu'a 7kg en 1mois",
+      name: "Programme de yoga",
+      imageUrl: "assets/images/sport.jpg",
+      description: "Renforcez votre corps et votre esprit avec des exercices de yoga.",
+      type: "Sportif",
     ),
     Program(
-      name: "Programme sportif",
-      imageUrl: "assets/images/sport.jpg", // URL en tant que ressource locale
-      description: "bouger et maintenez vous en forme",
+      name: "Programme de perte de poids",
+      imageUrl: "assets/images/perte_poids.jpg",
+      description: "Un plan nutritionnel pour perdre du poids de manière saine et équilibrée.",
+      type: "Nutrition",
     ),
-    // Ajoutez d'autres programmes ici
+    Program(
+      name: "Programme de renforcement musculaire",
+      imageUrl: "assets/images/renforcement.jpg",
+      description: "Un régime alimentaire pour stimuler la croissance musculaire et la récupération.",
+      type: "Nutrition",
+    ),
+    Program(
+      name: "Programme de nutrition sportive",
+      imageUrl: "assets/images/nutrition_sportive.jpg",
+      description: "Un guide alimentaire pour optimiser les performances lors de l'entraînement sportif.",
+      type: "Nutrition",
+    ),
+    Program(
+      name: "Programme de relaxation",
+      imageUrl: "assets/images/sport.jpg",
+      description: "Des exercices de respiration et de méditation pour réduire le stress et favoriser la détente.",
+      type: "Gestion du stress",
+    ),
+    Program(
+      name: "Programme de gestion du temps",
+      imageUrl: "assets/images/nutrition_sportive.jpg",
+      description: "Des techniques de planification et d'organisation pour gérer le stress lié aux deadlines et aux responsabilités.",
+      type: "Gestion du stress",
+    ),
+    Program(
+      name: "Programme d'hydratation",
+      imageUrl: "assets/images/nutrition_sportive.jpg",
+      description: "Un plan pour assurer une hydratation adéquate tout au long de la journée et maintenir une bonne santé.",
+      type: "Hydratation",
+    ),
   ];
 
-  final List<String> categories = [
-    'fitness ',
-    'nutrition ',
-    'gestion du stress',
-    'santé mentale ',
-    // Ajoutez d'autres catégories si nécessaire
+  final List<String> types = [
+    'Sportif',
+    'Nutrition',
+    'Gestion du stress',
+    'Hydratation',
   ];
+
+  String selectedType = 'Sportif'; // Variable d'état pour le type sélectionné
+  String searchText = ''; // Variable d'état pour le texte de recherche
 
   @override
   Widget build(BuildContext context) {
+    List<Program> filteredPrograms = programs.where((program) {
+      return program.type == selectedType &&
+          (program.name.toLowerCase().contains(searchText.toLowerCase()) ||
+              program.description.toLowerCase().contains(searchText.toLowerCase()));
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Liste des Programmes'),
@@ -70,14 +116,16 @@ class ProgrammeList extends StatelessWidget {
                 ),
               ),
               onChanged: (value) {
-                // Logique de recherche
+                setState(() {
+                  searchText = value;
+                });
               },
             ),
           ),
           Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
-              ' Catégories de programme :',
+              'Type de programme:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
@@ -85,39 +133,40 @@ class ProgrammeList extends StatelessWidget {
             height: 70,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: categories.length,
+              itemCount: types.length,
               itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF4F6FA),
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 4,
-                        spreadRadius: 2,
-                      ),
-                    ],
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedType = types[index];
+                    });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+                    decoration: BoxDecoration(
+                      color: selectedType == types[index] ? Colors.blue : Color(0xFFF4F6FA),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 4,
+                          spreadRadius: 2,
+                        ),
+                      ],
                     ),
                     child: Center(
-                      child: Text(categories[index],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black54,
-                      )
+                      child: Text(
+                        types[index],
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: selectedType == types[index] ? Colors.white : Colors.black54,
+                        ),
                       ),
-                    )
-                  );
-                //  Padding(
-                //   padding: EdgeInsets.symmetric(horizontal: 4.0),
-                //   child: Chip(
-                //     label: Text(categories[index]),
-                //     // Ajoutez des styles ou des actions aux chips si nécessaire
-                //   ),
-                // );
+                    ),
+                  ),
+                );
               },
             ),
           ),
@@ -129,51 +178,49 @@ class ProgrammeList extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: programs.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    elevation: 4,
-                    child: InkWell(
-                      onTap: () {
-                        // Navigation vers une autre page lorsqu'un programme est tapé
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DailyDietView(),
-                          ),
-                        );
-                      },
-                      child: ListTile(
-                        leading: Image.asset(programs[index].imageUrl), // Utilisation de la ressource locale
-                        title: Text(programs[index].name),
-                        subtitle: Text(programs[index].description),
+            child: filteredPrograms.isEmpty
+                ? Center(
+                    child: Text(
+                      'Aucun élément trouvé',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
                       ),
                     ),
+                  )
+                : ListView.builder(
+                    itemCount: filteredPrograms.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          elevation: 4,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DailyDietView(),
+                                ),
+                              );
+                            },
+                            child: ListTile(
+                              leading: Image.asset(filteredPrograms[index].imageUrl),
+                              title: Text(filteredPrograms[index].name),
+                              subtitle: Text(filteredPrograms[index].description),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
-      //code pour le boutton flotant
-      //  floatingActionButton: FloatingActionButton(
-      //   onPressed: (){
-      //     Navigator.push(context, MaterialPageRoute(builder: (context) => ChoixElement()));
-      //   },
-      //   tooltip: 'Increment',
-      //   backgroundColor: Colors.blueAccent, // Définit la couleur du bouton en bleu
-      //   foregroundColor: Colors.white, // Définit la couleur de l'icône en blanc
-      //   child: const Icon((Icons.add_circle),
-      // ),
-      // ),
-
       floatingActionButton: Stack(
         children: [
           Align(
@@ -185,7 +232,7 @@ class ProgrammeList extends StatelessWidget {
               tooltip: 'ajouter',
               backgroundColor: Colors.blueAccent,
               foregroundColor: Colors.white,
-              child: const Icon(Icons.add_circle,size: 30,),
+              child: const Icon(Icons.add_circle, size: 30),
             ),
           ),
           Padding(
@@ -195,19 +242,16 @@ class ProgrammeList extends StatelessWidget {
               child: FloatingActionButton(
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => ProgrammeAdd()));
-
                 },
                 tooltip: 'construire',
                 backgroundColor: Colors.greenAccent,
                 foregroundColor: Colors.white,
-                
-                child: const Icon(Icons.self_improvement,size: 40,),
+                child: const Icon(Icons.self_improvement, size: 40),
               ),
             ),
           ),
         ],
       ),
-
     );
   }
 }

@@ -1,5 +1,5 @@
 <?php
-
+require_once "Database.php";
 class Administrateur {
     private $conn;
     private $table_name = "administrateur";

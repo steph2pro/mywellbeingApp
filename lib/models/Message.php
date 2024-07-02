@@ -1,5 +1,5 @@
 <?php
-
+require_once "Database.php";
 class Message {
     private $conn;
     private $table_name = "message";

@@ -1,5 +1,10 @@
 <?php
 
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+require_once "Database.php";
 class Utilisateur {
     private $conn;
 
@@ -10,10 +15,15 @@ class Utilisateur {
     // Méthode pour créer un nouvel utilisateur
     public function createUtilisateur($nom, $prenom, $mot_de_passe, $email, $sexe, $role) {
         $query = "INSERT INTO utilisateur (nom, prenom, mot_de_passe, email, sexe, role)
-                  VALUES (?, ?, ?, ?, ?, ?)";
+                  VALUES (:nom, :prenom, :mot_de_passe, :email, :sexe, :role)";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("ssssss", $nom, $prenom, $mot_de_passe, $email, $sexe, $role);
+        $stmt->bindValue(':nom', $nom);
+        $stmt->bindValue(':prenom', $prenom);
+        $stmt->bindValue(':mot_de_passe', $mot_de_passe);
+        $stmt->bindValue(':email', $email);
+        $stmt->bindValue(':sexe', $sexe);
+        $stmt->bindValue(':role', $role);
 
         if ($stmt->execute()) {
             return true;
@@ -21,28 +31,32 @@ class Utilisateur {
             return false;
         }
     }
-
+    
     // Méthode pour récupérer les informations d'un utilisateur par son ID
     public function getUtilisateurById($id_utilisateur) {
-        $query = "SELECT * FROM utilisateur WHERE id_utilisateur = ?";
+        $query = "SELECT * FROM utilisateur WHERE id_utilisateur = :id_utilisateur";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("i", $id_utilisateur);
+        $stmt->bindValue(':id_utilisateur', $id_utilisateur, PDO::PARAM_INT);
         $stmt->execute();
-        $result = $stmt->get_result();
-        
-        $utilisateur = $result->fetch_assoc();
+        $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
         
         return $utilisateur;
     }
 
     // Méthode pour mettre à jour les informations d'un utilisateur
     public function updateUtilisateur($id_utilisateur, $nom, $prenom, $mot_de_passe, $email, $sexe, $role) {
-        $query = "UPDATE utilisateur SET nom = ?, prenom = ?, mot_de_passe = ?, email = ?, sexe = ?, role = ?
-                  WHERE id_utilisateur = ?";
+        $query = "UPDATE utilisateur SET nom = :nom, prenom = :prenom, mot_de_passe = :mot_de_passe, email = :email, sexe = :sexe, role = :role
+                  WHERE id_utilisateur = :id_utilisateur";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("ssssssi", $nom, $prenom, $mot_de_passe, $email, $sexe, $role, $id_utilisateur);
+        $stmt->bindValue(':nom', $nom);
+        $stmt->bindValue(':prenom', $prenom);
+        $stmt->bindValue(':mot_de_passe', $mot_de_passe);
+        $stmt->bindValue(':email', $email);
+        $stmt->bindValue(':sexe', $sexe);
+        $stmt->bindValue(':role', $role);
+        $stmt->bindValue(':id_utilisateur', $id_utilisateur, PDO::PARAM_INT);
 
         if ($stmt->execute()) {
             return true;
@@ -54,10 +68,10 @@ class Utilisateur {
     // Méthode pour lister tous les utilisateurs
     public function getAllUtilisateurs() {
         $query = "SELECT * FROM utilisateur";
-        $result = $this->conn->query($query);
+        $stmt = $this->conn->query($query);
 
         $utilisateurs = array();
-        while ($row = $result->fetch_assoc()) {
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $utilisateurs[] = $row;
         }
 
@@ -67,18 +81,18 @@ class Utilisateur {
     // Méthode pour compter le nombre total d'utilisateurs
     public function countUtilisateurs() {
         $query = "SELECT COUNT(*) as total FROM utilisateur";
-        $result = $this->conn->query($query);
-        $row = $result->fetch_assoc();
+        $stmt = $this->conn->query($query);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return $row['total'];
     }
 
     // Méthode pour supprimer un utilisateur par son ID
     public function deleteUtilisateur($id_utilisateur) {
-        $query = "DELETE FROM utilisateur WHERE id_utilisateur = ?";
+        $query = "DELETE FROM utilisateur WHERE id_utilisateur = :id_utilisateur";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("i", $id_utilisateur);
+        $stmt->bindValue(':id_utilisateur', $id_utilisateur, PDO::PARAM_INT);
 
         if ($stmt->execute()) {
             return true;
@@ -87,43 +101,48 @@ class Utilisateur {
         }
     }
 
-    // Méthode pour authentifier un utilisateur
-    public function authenticate($email, $mot_de_passe) {
-        $query = "SELECT * FROM utilisateur WHERE email = ? AND mot_de_passe = ?";
+     // Méthode pour authentifier un utilisateur
+     public function authenticate($nom, $mot_de_passe) {
+        // Vérifier si l'utilisateur existe dans la base de données
+        $query = "SELECT * FROM utilisateur WHERE nom = :nom AND mot_de_passe = :mot_de_passe";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("ss", $email, $mot_de_passe);
+        $stmt->bindValue(':nom', $nom);
+        $stmt->bindValue(':mot_de_passe', $mot_de_passe);
         $stmt->execute();
-        $result = $stmt->get_result();
         
-        $utilisateur = $result->fetch_assoc();
-        
-        return $utilisateur;
+        if ($stmt->rowCount() > 0) {
+            // Utilisateur trouvé, récupérer les informations et les renvoyer sous forme de tableau associatif
+            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $data;
+        } else {
+            // Utilisateur non trouvé, retourner null
+            return null;
+        }
     }
 
     // Méthode pour vérifier l'existence d'un email
     public function emailExists($email) {
-        $query = "SELECT * FROM utilisateur WHERE email = ?";
+        $query = "SELECT * FROM utilisateur WHERE email = :email";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("s", $email);
+        $stmt->bindValue(':email', $email);
         $stmt->execute();
-        $result = $stmt->get_result();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        return $result->num_rows > 0;
+        return $result !== false;
     }
 
     // Méthode pour rechercher des utilisateurs par rôle
     public function getUtilisateursByRole($role) {
-        $query = "SELECT * FROM utilisateur WHERE role = ?";
+        $query = "SELECT * FROM utilisateur WHERE role = :role";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("s", $role);
+        $stmt->bindValue(':role', $role);
         $stmt->execute();
-        $result = $stmt->get_result();
         
         $utilisateurs = array();
-        while ($row = $result->fetch_assoc()) {
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $utilisateurs[] = $row;
         }
         
@@ -132,19 +151,17 @@ class Utilisateur {
 
     // Méthode pour rechercher des utilisateurs par sexe
     public function getUtilisateursBySexe($sexe) {
-        $query = "SELECT * FROM utilisateur WHERE sexe = ?";
+        $query = "SELECT * FROM utilisateur WHERE sexe = :sexe";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("s", $sexe);
+        $stmt->bindValue(':sexe', $sexe);
         $stmt->execute();
-        $result = $stmt->get_result();
         
         $utilisateurs = array();
-        while ($row = $result->fetch_assoc()) {
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $utilisateurs[] = $row;
         }
         
         return $utilisateurs;
     }
 }
-?>

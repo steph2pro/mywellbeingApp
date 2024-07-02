@@ -4,6 +4,8 @@ import 'package:mywellbeing/views/choix.dart';
 import 'package:mywellbeing/views/widgets/customTextFied.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:mywellbeing/views/widgets/loading.dart';
 class Register extends StatefulWidget {
   //const Register({super.key});
   //fonction visible pour basculer de la page Register a la page register
@@ -18,28 +20,52 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
 
+   String erreur="";
+   bool _loading=false;
 //creation de la fonction pour enregistrer les utilisateurs
-void creationCompte (String nom, String prenom, String email,String pass, String residence,String? sexe) async{
+void creationCompte (String nom, String prenom, String email,String pass, String action,String? sexe) async{
+   setState((){
+      erreur="";
+      _loading=true;
+    });
    try { 
     //on utilise la methode post pour envoyer les donne 
     //on entre d'adord l'url et par la suite les donne a envoyer sous forme de cle-valeur notament dans le body
-    final response= await http.post(Uri.parse("https://stephprojetapp.000webhostapp.com/mywellbeing/creation_compte.php"),body: {
+    final response= await http.post(Uri.parse("https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/userViewmodel.php"),body: {
       "nom":nom,
       "prenom":prenom,
       "email":email,
       "pass":pass,
-      "residence":residence,
+      "action":action,
       "sexe":sexe
     });
     //on fait une condition pour voir si la requette as ete executer normalement
     if (response.statusCode==200) {
       var data=jsonDecode(response.body);
       print(data);
+      var result=data['data'];
+      int succes=result["success"];
+      print(succes);
+      if(succes==1){
+        setState((){
+          _loading=false;
+          erreur=result["message"];
+        });
+      }else{
+         setState((){
+          print(result["message"]);
+          erreur=result["message"];
+          _loading=false;
+        });
+
+      }
     } else {
         print("Erreur de connexion : ${response.statusCode}");
+        print("error: ${response.body}");
     }
   } catch (error) {
     print("Erreur de connexion : $error");
+    
   }
 }
 
@@ -73,18 +99,19 @@ void creationCompte (String nom, String prenom, String email,String pass, String
     placeholder: "entrez votre mot de pass",
     ispass: true,
     );
-  CustomTextFied villeText=new CustomTextFied(
-    title: "Ville de residence",
-    placeholder: "entrez votre ville de residence",
-    ispass: true,
-    );
+  // CustomTextFied villeText=new CustomTextFied(
+  //   title: "Ville de residence",
+  //   placeholder: "entrez votre ville de residence",
+  //   ispass: true,
+  //   );
   //initialisation de la cle de validation
   final _key = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     emailText.err="entez l'email";
     passText.err="entrez le mot de pass";
-    return Scaffold(
+    return _loading ? Loading()
+    :Scaffold(
       body: Center( 
         child:  SingleChildScrollView(
         child: Container(
@@ -105,7 +132,7 @@ void creationCompte (String nom, String prenom, String email,String pass, String
           SizedBox(height: 15,),
           passText.textfrofield(),
           SizedBox(height: 15,),
-          villeText.textfrofield(),
+          //villeText.textfrofield(),
           SizedBox(height: 15,),
   //      radio button
 
@@ -125,7 +152,7 @@ void creationCompte (String nom, String prenom, String email,String pass, String
           Row(
             children: [
               Radio(
-                value: 'Féminin',
+                value: 'Feminin',
                 groupValue: selectedGender,
                 onChanged: onGenderChanged,
               ),
@@ -139,14 +166,14 @@ void creationCompte (String nom, String prenom, String email,String pass, String
           SizedBox(height: 15,),
           ElevatedButton(
             onPressed: () {
-              // if (_key.currentState?.validate() ?? false) {
-              //   creationCompte(nomText.value, prenomText.value, emailText.value, passText.value, villeText.value, selectedGender);
-              //   // print(selectedGender);
-              //   // print("ok");
-              // } else {
+              if (_key.currentState?.validate() ?? false) {
+                creationCompte(nomText.value, prenomText.value, emailText.value, passText.value,"create",selectedGender);
+                // print(selectedGender);
+                // print("ok");
+              } else {
                 
-              // }
-              Navigator.push(context, MaterialPageRoute(builder: (context) => Choix()));
+              }
+             // Navigator.push(context, MaterialPageRoute(builder: (context) => Choix()));
             },
             child: Text('enregistrer',style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
             style: ElevatedButton.styleFrom(
@@ -166,7 +193,18 @@ void creationCompte (String nom, String prenom, String email,String pass, String
               child: Text('Connectez-vous', style: TextStyle(fontSize: 15, color:Colors.blueAccent),),
             ),
             ],
-          )
+            
+          ),
+          SizedBox(height: 30,),
+          Text(
+                erreur,
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              )
         ],),
             )
         )

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class Program {
   final String name;
   final String imageUrl;
@@ -8,7 +7,6 @@ class Program {
 
   Program({required this.name, required this.imageUrl, required this.description});
 }
-
 
 class Recherche extends StatefulWidget {
   @override
@@ -44,8 +42,8 @@ class _RechercheState extends State<Recherche> {
 
   @override
   Widget build(BuildContext context) {
-    //logique de la recherche
-     List<Program> filteredPrograms = programs.where((program) {
+    // Logique de la recherche
+    List<Program> filteredPrograms = programs.where((program) {
       final programNameLower = program.name.toLowerCase();
       final programDescriptionLower = program.description.toLowerCase();
       final queryLower = query.toLowerCase();
@@ -55,12 +53,14 @@ class _RechercheState extends State<Recherche> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Recherche',
-        style:TextStyle(color: Colors.white,
-                    fontFamily: 'Montseraat',
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-            ),
+        title: Text(
+          'Recherche',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Montseraat',
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.blueAccent[400],
@@ -83,19 +83,35 @@ class _RechercheState extends State<Recherche> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: filteredPrograms.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  margin: const EdgeInsets.all(8.0),
-                  child: ListTile(
-                    leading: Image.asset(filteredPrograms[index].imageUrl, width: 50, height: 50, fit: BoxFit.cover),
-                    title: Text(filteredPrograms[index].name),
-                    subtitle: Text(filteredPrograms[index].description),
+            child: filteredPrograms.isEmpty
+                ? Center(
+                    child: Text(
+                      'Aucun élément trouvé',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: filteredPrograms.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        margin: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          leading: Image.asset(
+                            filteredPrograms[index].imageUrl,
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                          ),
+                          title: Text(filteredPrograms[index].name),
+                          subtitle: Text(filteredPrograms[index].description),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
