@@ -7,6 +7,8 @@ class Recette {
     public $id_recette;
     public $nom;
     public $propriete;
+    public $ingredients;
+    public $image;
     public $description;
 
     public function __construct($db) {
@@ -14,12 +16,13 @@ class Recette {
     }
 
     // Méthode pour créer une nouvelle recette
-    public function createRecette($nom, $propriete, $description) {
-        $query = "INSERT INTO " . $this->table_name . " (nom, propriete, description)
-                  VALUES (?, ?, ?)";
+    public function createRecette($nom, $propriete, $ingredients, $image, $description) {
+        $query = "INSERT INTO " . $this->table_name . " (nom, propriete, ingredients, image, description)
+                  VALUES (?, ?, ?, ?, ?)";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("sss", $nom, $propriete, $description);
+        // Utilisation de "sssss" pour binder 5 chaînes de caractères
+        $stmt->bind_param("sssss", $nom, $propriete, $ingredients, $image, $description);
 
         if ($stmt->execute()) {
             return true;
@@ -27,7 +30,6 @@ class Recette {
             return false;
         }
     }
-
     // Méthode pour récupérer les informations d'une recette par son ID
     public function getRecetteById($id_recette) {
         $query = "SELECT * FROM " . $this->table_name . " WHERE id_recette = ?";
@@ -43,12 +45,12 @@ class Recette {
     }
 
     // Méthode pour mettre à jour les informations d'une recette
-    public function updateRecette($id_recette, $nom, $propriete, $description) {
-        $query = "UPDATE " . $this->table_name . " SET nom = ?, propriete = ?, description = ?
+    public function updateRecette($id_recette, $nom, $propriete,$ingredients, $image, $description) {
+        $query = "UPDATE " . $this->table_name . " SET nom = ?, propriete = ?,ingredients=?, image=?, description = ?
                   WHERE id_recette = ?";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("sssi", $nom, $propriete, $description, $id_recette);
+        $stmt->bind_param("sssi", $nom, $propriete,$ingredients, $image, $description, $id_recette);
 
         if ($stmt->execute()) {
             return true;
