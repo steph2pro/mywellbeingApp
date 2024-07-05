@@ -9,6 +9,8 @@ class Exercice {
     public $type;
     public $niveau_difficulte;
     public $contenu;
+    public $description;
+    public $son;
     public $duree;
 
     public function __construct($db) {
@@ -16,12 +18,12 @@ class Exercice {
     }
 
     // Méthode pour créer un nouvel exercice
-    public function createExercice($nom, $type, $niveau_difficulte, $contenu, $duree) {
-        $query = "INSERT INTO " . $this->table_name . " (nom, type, niveau_difficulte, contenu, duree)
-                  VALUES (?, ?, ?, ?, ?)";
+    public function createExercice($nom, $type, $niveau_difficulte,$contenu,$description, $son,  $duree) {
+        $query = "INSERT INTO " . $this->table_name . " (nom, type, niveau_difficulte, description, contenu, duree)
+                  VALUES (?, ?, ?, ?, ?,?)";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("sssss", $nom, $type, $niveau_difficulte, $contenu, $duree);
+        $stmt->bind_param("sssss", $nom, $type, $niveau_difficulte,$contenu, $description ,$son, $duree);
 
         if ($stmt->execute()) {
             return true;
@@ -45,12 +47,12 @@ class Exercice {
     }
 
     // Méthode pour mettre à jour les informations d'un exercice
-    public function updateExercice($id_exercice, $nom, $type, $niveau_difficulte, $contenu, $duree) {
-        $query = "UPDATE " . $this->table_name . " SET nom = ?, type = ?, niveau_difficulte = ?, contenu = ?, duree = ?
+    public function updateExercice($id_exercice, $nom, $type, $niveau_difficulte, $contenu,$description ,$son, $duree) {
+        $query = "UPDATE " . $this->table_name . " SET nom = ?, type = ?, niveau_difficulte = ?, contenu = ?,description=? ,son=?, duree = ?
                   WHERE id_exercice = ?";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("sssssi", $nom, $type, $niveau_difficulte, $contenu, $duree, $id_exercice);
+        $stmt->bind_param("sssssi", $nom, $type, $niveau_difficulte, $contenu,$description ,$son, $duree, $id_exercice);
 
         if ($stmt->execute()) {
             return true;

@@ -108,6 +108,8 @@ CREATE TABLE message (
 CREATE TABLE recette (
     id_recette INTEGER AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(255) NULL,
+    ingredients VARCHAR(255) NULL,
+    images VARCHAR(255) NULL,
     propriete VARCHAR(255) NULL,
     description VARCHAR(255) NULL
 );
@@ -120,6 +122,7 @@ CREATE TABLE seance_entrainement (
     id_seance_entrainement INTEGER AUTO_INCREMENT PRIMARY KEY,
     titre VARCHAR(255) NULL,
     description VARCHAR(255) NULL,
+    son VARCHAR(255) NULL,
     contenu VARCHAR(255) NULL,
     duree VARCHAR(255) NULL,
     niveau_difficulte VARCHAR(255) NULL
@@ -135,6 +138,7 @@ CREATE TABLE exercice (
     type VARCHAR(255) NULL,
     niveau_difficulte VARCHAR(255) NULL,
     contenu VARCHAR(255) NULL,
+    description VARCHAR(255) NULL,
     duree VARCHAR(255) NULL
 );
 

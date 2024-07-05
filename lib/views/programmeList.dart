@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mywellbeing/views/DailyDietView.dart';
+import 'package:mywellbeing/views/Planregime.dart';
 import 'package:mywellbeing/views/programme/choixElement.dart';
 import 'package:mywellbeing/views/programme/programmeAdd.dart';
 
@@ -204,7 +204,7 @@ class _ProgrammeListState extends State<ProgrammeList> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DailyDietView(),
+                                  builder: (context) => Planregime(),
                                 ),
                               );
                             },
