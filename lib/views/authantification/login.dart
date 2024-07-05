@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mywellbeing/crypte/encrypte.dart';
 import 'package:mywellbeing/models/userModel/userModel.dart';
 import 'package:mywellbeing/views/pagePincipal.dart';
 import 'package:mywellbeing/views/widgets/customTextFied.dart';
@@ -33,15 +34,17 @@ class _LoginState extends State<Login> {
     //on utilise la methode post pour envoyer les donne 
     //on entre d'adord l'url et par la suite les donne a envoyer sous forme de cle-valeur notament dans le body
     final response= await http.post(Uri.parse("https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/userViewmodel.php"),body: {
-      "nom":nom,
-      "pass":pass,
+      "nom":encrypt(nom),
+      "pass":encrypt(pass),
       "action":action,
     });
     //on fait une condition pour voir si la requette as ete executer normalement
     if (response.statusCode==200) {
-      var data=jsonDecode(response.body);
-      print(data);
+      //print(decrypt(response.body));
+      var data=jsonDecode(decrypt(response.body));
+      
       var result=data['data'];
+      print(result);
       int succes=result["success"];
       print(succes);
       if(succes==1){

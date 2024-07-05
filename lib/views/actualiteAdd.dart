@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:mywellbeing/api/api.dart';
+import 'package:mywellbeing/models/userModel/postModel.dart';
+import 'package:mywellbeing/models/userModel/userModel.dart';
+import 'package:mywellbeing/views/widgets/navBarWidget.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ActualiteAdd extends StatefulWidget {
   @override
   _ActualiteAddState createState() => _ActualiteAddState();
 }
+bool post=false;
+//istancier la class postModel
+PostModel mypost= new PostModel(id_post: "", titre: '', type: 'Actualite', contenue: '', date_post: '', user: '');
+//methode pour ajouter un post
 
 class _ActualiteAddState extends State<ActualiteAdd> {
+
   String _title = '';
   String _description = '';
   String _content = '';
@@ -26,13 +37,14 @@ class _ActualiteAddState extends State<ActualiteAdd> {
                   ),
                   ),
                   ),
-                  profilPlus
+                  NavBarWidget()
               ]
             ),
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.blueAccent[400],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
+        child:Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -132,6 +144,7 @@ class _ActualiteAddState extends State<ActualiteAdd> {
             SizedBox(height: 16.0),
             if (_isTextContent)
               TextField(
+                
                 decoration: InputDecoration(
                   labelText: 'Contenu texte',
                   labelStyle: TextStyle(color: Colors.grey[700]),
@@ -183,7 +196,41 @@ class _ActualiteAddState extends State<ActualiteAdd> {
             SizedBox(height: 26.0),
             ElevatedButton(
              
-              onPressed: () {
+              onPressed: !post ? null:() async{
+                setState(() {
+                  post=true;
+                });
+                if(_title !='' && _description !='' && _content !='' ){
+                  mypost.titre=_title;
+                  mypost.contenue=_content;
+                  mypost.type="Actualite";
+                  UserModel? user = await UserService.infoUser();
+                  var id=user!.id_utilisateur;
+                  mypost.user=id.toString();
+                  
+                  var result=await Api.addPost(mypost.toMap());
+                print("******************messages************");
+                if(result!=null && result[0]==true){
+                   setState(() {
+                    post=false;
+                  
+                  });
+                   Navigator.of(context).pop();
+
+                }else if(result!=null && !result[0]==true){
+                  setState(() {
+                    post=false;
+                  
+                  });
+                }else{
+                  setState(() {
+                    post=false;
+                  
+                  });
+                }
+                }
+                // print("******************messages************");
+                // print( user!.id_utilisateur);
                 // Ajoute ici la logique pour sauvegarder l'actualité dans ta base de données
               },
              child: Text('Ajouter',
@@ -203,31 +250,9 @@ class _ActualiteAddState extends State<ActualiteAdd> {
           ],
         ),
       ),
+      )
       
     );
   }
   
 }
-Widget profilPlus = Container(
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundImage: AssetImage('assets/images/profile.png'),
-            radius: 20,
-          ),
-          SizedBox(width: 10),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              // Action à effectuer lors du clic sur l'icône de recherche
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.notifications),
-            onPressed: () {
-              // Action à effectuer lors du clic sur l'icône de notification
-            },
-          ),
-        ],
-      ),
-    );

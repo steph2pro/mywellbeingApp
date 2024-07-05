@@ -6,6 +6,7 @@ import 'package:mywellbeing/views/pagePincipal.dart';
 import 'package:mywellbeing/views/profil.dart';
 
 class HomePage extends StatefulWidget {
+ // final VoidCallback login;,required this.login
   const HomePage({Key? key}) : super(key: key);
 
   @override
@@ -57,19 +58,19 @@ if(UserModel.sessionUser != null){
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "My Well being",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: Colors.blueAccent[400],
-      ),
+      // appBar: AppBar(
+      //   title: Text(
+      //     "My Well being",
+      //     textAlign: TextAlign.center,
+      //     style: TextStyle(
+      //       fontSize: 30,
+      //       fontWeight: FontWeight.bold,
+      //       color: Colors.white,
+      //     ),
+      //   ),
+      //   iconTheme: IconThemeData(color: Colors.white),
+      //   backgroundColor: Colors.blueAccent[400],
+      // ),
       body: Column(
         children: [
           Expanded(

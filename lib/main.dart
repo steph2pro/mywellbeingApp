@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mywellbeing/views/Acceuil.dart';
 import 'package:mywellbeing/views/pagePincipal.dart';
 import 'package:mywellbeing/views/chargement.dart';
-import 'package:mywellbeing/views/uploadImage.dart';
+import 'package:mywellbeing/views/recaptch.dart';
 
 void main() {
   runApp(  
@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget{
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
        home :Acceuil(),
+       
     );
   }
 }

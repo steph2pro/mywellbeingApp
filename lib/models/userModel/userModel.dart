@@ -15,7 +15,7 @@ class UserModel{
     required this.sexe,
     required this.role});
     //declaration de la variable pour contenire la session de l'utilisateur
-    static late UserModel sessionUser;
+    static late UserModel ? sessionUser;
   // factory UserModel.formJson( Map<String, dynamic> i )=>UserModel(
   //   id_utilisateur :i['id_utilisateur '],
   //   nom:i['nom'],
@@ -63,7 +63,27 @@ class UserModel{
       var decode = json.decode(data);
       var user = await UserModel.fromJson(decode);
       sessionUser=user;
-      print(sessionUser.prenom);
+      print(sessionUser?.prenom);
+      //
     }
+  }
+  //methode pour deconecter un utilisateur (le metre a null dans la base shered preference)
+  static Future<void> logOut() async {
+  final SharedPreferences pref = await SharedPreferences.getInstance();
+  //on met la variable sessionUser a null
+  sessionUser=null;
+  await pref.remove("user");
+}
+}
+class UserService {
+  static Future<UserModel?> infoUser() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var data = pref.getString("user");
+    if (data != null) {
+      var decode = json.decode(data);
+      var user = UserModel.fromJson(decode);
+      return user;
+    }
+    return null;
   }
 }

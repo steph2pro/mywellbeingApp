@@ -7,6 +7,7 @@ import 'package:mywellbeing/views/messages_screen.dart';
 import 'package:mywellbeing/views/widgets/navBarWidget.dart';
 
 class PagePincipal extends StatefulWidget {
+  //final VoidCallback login;,required this.login
   const PagePincipal({super.key});
 
   @override

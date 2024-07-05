@@ -2,6 +2,7 @@
 
 require_once '../models/Database.php'; // Assurez-vous que le chemin est correct
 require_once '../models/Utilisateur.php';
+require_once '../models/crypto/crypto.php';
 
 // Instancier la classe Database
 $database = new Database();
@@ -9,7 +10,7 @@ $connection = $database->getConnection();
 $userBD = new Utilisateur($connection);
 
 // Récupération des données
-$action = $_POST['action'];
+$action = decrypt($_POST['action']);
 
 // Effectuer les opérations CRUD en fonction de l'action
 switch ($action) {
@@ -49,8 +50,8 @@ switch ($action) {
         break;
         case 'login':
                     // Récupérer les données de connexion
-                $nom = $_POST['nom'];
-                $mot_de_passe = sha1($_POST['pass']); // Cryptage du mot de passe avec 
+                $nom =decrypt( $_POST['nom']);
+                $mot_de_passe = sha1(decrypt($_POST['pass'])); // Cryptage du mot de passe avec 
                 $query = "SELECT * FROM utilisateur WHERE nom = :nom AND mot_de_passe = :mot_de_passe";
         
                 $stmt = $connection->prepare($query);
@@ -72,40 +73,13 @@ switch ($action) {
                     echo json_encode(
                         [
                             "data" => [
-                                "message" => $msg,
+                                "message" => decrypt($msg),
                                 "success" => $success,
                                 "user" => $utilisateur
                             ]
                         ]
                     );
-            // if (isset($nom,$mot_de_passe)) {
-        
-            //     // Authentifier l'utilisateur
-            //     $utilisateur = $userBD->authenticate($nom, $mot_de_passe);
-        
-            //     if ($utilisateur != null) {
-            //         // Authentification réussie
-            //         $success = 1;
-            //         $msg = "Connexion réussie !";
-            //         // Démarrer une session et stocker des informations utilisateur
-            //         // session_start();
-            //         // $_SESSION['utilisateur'] = $utilisateur; // Stocker les informations de l'utilisateur dans la session
-            //     } else {
-            //         // Authentification échouée
-            //         $success = 0;
-            //         $msg = "nom ou mot de passe incorrect.";
-            //     }
-        
-            //     echo json_encode(
-            //         [
-            //             "data" => [
-            //                 "message" => $msg,
-            //                 "success" => $success,
-            //                 "user" => $utilisateur
-            //             ]
-            //         ]
-            //     );
-            // }
+           
             break;
     
     case 'update':
