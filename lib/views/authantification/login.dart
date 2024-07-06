@@ -41,7 +41,7 @@ class _LoginState extends State<Login> {
     //on fait une condition pour voir si la requette as ete executer normalement
     if (response.statusCode==200) {
       //print(decrypt(response.body));
-      var data=jsonDecode(decrypt(response.body));
+      var data=jsonDecode((response.body));
       
       var result=data['data'];
       print(result);

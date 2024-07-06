@@ -10,7 +10,7 @@ $connection = $database->getConnection();
 $userBD = new Utilisateur($connection);
 
 // Récupération des données
-$action = decrypt($_POST['action']);
+$action = ($_POST['action']);
 
 // Effectuer les opérations CRUD en fonction de l'action
 switch ($action) {
@@ -22,22 +22,36 @@ switch ($action) {
         $email = $_POST['email'];
         $sexe = $_POST['sexe'];
         $role = "simple_utilisateur";
-        
-        // Vérifier si l'email existe déjà
-        if ($userBD->emailExists($email)) {
-            $succes = 0;
-            $msg = "L'email existe deja. Veuillez utiliser un autre email.";
+        if (!empty($_FILES['photo']['name'])) {
+            $photo = $_FILES['photo']['tmp_name'];
+            $ext = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+            $newName = 'profile_' . rand() . '.' . $ext;
+            $target = 'profils/' . $newName;
+            move_uploaded_file($photo, $target);
+            
+            // $sql = 'INSERT INTO profil (id_utilisateur,age, taille, poids, ville_residence, objectifs, photo) VALUES (?, ?, ?, ?, ?, ?)';
+            // $stmt = $pdo->prepare($sql);
+            // $stmt->execute([$id,$age, $taille, $poids, $ville_residence, $objectif, $newName]);
+            // Vérifier si l'email existe déjà
+                    if ($userBD->emailExists($email)) {
+                        $succes = 0;
+                        $msg = "L'email existe deja. Veuillez utiliser un autre email.";
+                    } else {
+                        // Créer un nouvel utilisateur
+                        $create = $userBD->createUtilisateur($nom, $prenom, $pass, $email, $sexe, $role,$newName);
+                        if ($create) {
+                            $succes = 1;
+                            $msg = "Compte cree avec succes !";
+                        } else {
+                            $succes = 0;
+                            $msg = "Erreur d'enregistrement.";
+                        }
+                    }
         } else {
-            // Créer un nouvel utilisateur
-            $create = $userBD->createUtilisateur($nom, $prenom, $pass, $email, $sexe, $role);
-            if ($create) {
-                $succes = 1;
-                $msg = "Compte cree avec succes !";
-            } else {
-                $succes = 0;
-                $msg = "Erreur d'enregistrement.";
-            }
+            $succes = 0;
+            $msg = "aucune photo n'as ete charger.";
         }
+       
 
         echo json_encode(
             [
@@ -73,7 +87,7 @@ switch ($action) {
                     echo json_encode(
                         [
                             "data" => [
-                                "message" => decrypt($msg),
+                                "message" => encrypt($msg),
                                 "success" => $success,
                                 "user" => $utilisateur
                             ]

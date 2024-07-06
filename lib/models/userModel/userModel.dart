@@ -7,13 +7,16 @@ class UserModel{
   String email;
   String sexe;
   String role;
+  String photo;
   UserModel({
     required this.id_utilisateur ,
     required this.nom,
     required this.prenom,
     required this.email,
     required this.sexe,
-    required this.role});
+    required this.role,
+    required this.photo,
+    });
     //declaration de la variable pour contenire la session de l'utilisateur
     static late UserModel ? sessionUser;
   // factory UserModel.formJson( Map<String, dynamic> i )=>UserModel(
@@ -32,6 +35,8 @@ class UserModel{
       email: json['email'] ?? '',
       sexe: json['sexe'] ?? '',
       role: json['role'] ?? '',
+      photo: json['photo'] ?? '',
+
     );
   }
   //methode pour transformer l'objet en map
@@ -42,6 +47,8 @@ class UserModel{
     "email":email,
     "sexe":sexe,
     "role":role,
+    "photo":photo,
+
   };
   //methode qui vas recuperer l'utilisateur et le stocker dans la memoire cahe
   //une metothe static est assessible meme sans avoir instancier un objet de cette class

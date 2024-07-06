@@ -31,8 +31,6 @@ class MyProfile extends StatefulWidget {
   _MyProfileState createState() => _MyProfileState();
 }
 
-int userId = 0;
-
 class _MyProfileState extends State<MyProfile> {
   // Liste des images
   List<String> mesImg = [
@@ -67,14 +65,12 @@ class _MyProfileState extends State<MyProfile> {
     ),
   ];
 
-  late Future<Profile> futureProfile;
   UserModel? _user;
 
   @override
   void initState() {
     super.initState();
     _loadUser();
-    futureProfile = fetchProfile(userId);
     
   }
 
@@ -83,40 +79,26 @@ class _MyProfileState extends State<MyProfile> {
     setState(() {
       _user = user;
     });
-    if (_user != null) {
-      userId = _user!.id_utilisateur;
-    }
-    await Profile.getProfile();
+    
+    
   }
-  //fonction pour recuperer le profil de l'utilisateur et de le metre dans la base de donne local
-  Future<Profile> fetchProfile(int userId) async {
-    final response = await http.get(Uri.parse('https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/readprofil.php?id_utilisateur=$userId'));
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> json = jsonDecode(response.body);
-      var prof = Profile.fromJson(json);
-      //enregistrement dans la bd local
-      Profile.saveProfile(prof);
-      return prof;
-    } else {
-      throw Exception('impossible de lire le profil');
-    }
-  }
+ 
  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF7165D6),
-      body: FutureBuilder<Profile?>(
-        future: futureProfile,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError || !snapshot.hasData) {
-            return Center(child: Text('Erreur de chargement du profil'));
-          } else {
-            final profile = snapshot.data!;
-            return SingleChildScrollView(
+       body:
+      // FutureBuilder<Profile?>(
+      //   future: futureProfile,
+      //   builder: (context, snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return Center(child: CircularProgressIndicator());
+      //     } else if (snapshot.hasError || !snapshot.hasData) {
+      //       return Center(child: Text('Erreur de chargement du profil'));
+      //     } else {
+      //       final profile = snapshot.data!;
+             SingleChildScrollView(
               child: Column(
                 children: [
                   const SizedBox(height: 50),
@@ -163,9 +145,9 @@ class _MyProfileState extends State<MyProfile> {
                             children: [
                               CircleAvatar(
                                 radius: 35,
-                                backgroundImage: profile.photo.isNotEmpty
-                                    ? NetworkImage('https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/profils/${profile.photo}') as ImageProvider<Object>
-                                    : AssetImage('assets/images/profile.png'),
+                                backgroundImage: _user != null
+                                  ? NetworkImage('https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/profils/${_user!.photo}') as ImageProvider<Object>
+                                    :AssetImage('assets/images/profile.png'),
                               ),
                               const SizedBox(height: 15),
                               _user != null
@@ -516,10 +498,11 @@ class _MyProfileState extends State<MyProfile> {
                   
                 ]
               ),
-            );
-          }
-        },
-      ),
+            )
+          
+        
+        
+        ,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Navigator.push(context, MaterialPageRoute(builder: (context) => ActualiteAdd()));

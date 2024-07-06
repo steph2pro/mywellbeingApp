@@ -13,9 +13,9 @@ class Utilisateur {
     }
 
     // Méthode pour créer un nouvel utilisateur
-    public function createUtilisateur($nom, $prenom, $mot_de_passe, $email, $sexe, $role) {
-        $query = "INSERT INTO utilisateur (nom, prenom, mot_de_passe, email, sexe, role)
-                  VALUES (:nom, :prenom, :mot_de_passe, :email, :sexe, :role)";
+    public function createUtilisateur($nom, $prenom, $mot_de_passe, $email, $sexe, $role,$photo) {
+        $query = "INSERT INTO utilisateur (nom, prenom, mot_de_passe, email, sexe, role,photo)
+                  VALUES (:nom, :prenom, :mot_de_passe, :email, :sexe, :role,:photo)";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindValue(':nom', $nom);
@@ -24,6 +24,7 @@ class Utilisateur {
         $stmt->bindValue(':email', $email);
         $stmt->bindValue(':sexe', $sexe);
         $stmt->bindValue(':role', $role);
+        $stmt->bindValue(':photo', $photo);
 
         if ($stmt->execute()) {
             return true;
