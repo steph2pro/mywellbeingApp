@@ -2,17 +2,73 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mywellbeing/api/api.dart';
+import 'package:mywellbeing/models/userModel/professionelModel.dart';
+import 'package:mywellbeing/views/widgets/loading.dart';
 
+class AppointmentScreen extends StatefulWidget {
+  // const AppointmentScreen({super.key});
+  
+
+  @override
+  State<AppointmentScreen> createState() => _AppointmentScreenState();
+}
+
+class _AppointmentScreenState extends State<AppointmentScreen> {
 
 // ignore: use_key_in_widget_constructors
-class AppointmentScreen extends StatelessWidget{
+//class AppointmentScreen extends StatelessWidget{
    List<String> imgs = ['doctor1.jpg', 'doctor2.jpg', 'doctor3.jpg', 'doctor4.jpg'];
    
+   List<ProfessionelSante> professionnels= [];
+  String erreur = "";
+  bool _loading = false;
+
+  Future<void> getdata() async {
+    setState(() {
+      _loading = true;
+    });
+
+    try {
+      var data = await Api.getProfessionel();
+      if (data != null) {
+        professionnels.clear();
+        for (Map i in data) {
+          setState(() {
+            professionnels.add(ProfessionelSante.fromJson(i));
+          });
+          
+        }
+        print("***********888888888888888");
+        print(professionnels);
+        setState(() {
+        _loading = false;
+      });
+      }
+    } catch (e) {
+      print("Error: $e");
+      setState(() {
+        erreur = e.toString();
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getdata();
+  }
+
 @override
    Widget build(BuildContext context){
     return   Scaffold(
       backgroundColor: const Color(0xFF7165D6),
-      body: SingleChildScrollView(
+      body: _loading ? Loading()
+      :SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 50),
@@ -182,10 +238,12 @@ class AppointmentScreen extends StatelessWidget{
                    SizedBox(
                     height: 200,
                     width: 600,
-                    child: ListView.builder(
+                    child: 
+                    ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: 4,
+                      itemCount: professionnels.length,
                       itemBuilder: (context,index){
+                        final professionel=professionnels[index];
                         return Container(
                           height: 150,
                            width: 300,
@@ -209,14 +267,25 @@ class AppointmentScreen extends StatelessWidget{
                                 ListTile(
                                   leading: CircleAvatar(
                                     radius: 25,
-                                   backgroundImage: Image.asset("assets/images/${imgs[index % imgs.length]}").image,
+                                   backgroundImage: NetworkImage("https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/profils/${professionel.photo}"),
                                   ),
-                                  title: const Text(
-                                    "MR ASSAN",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                  title:  professionel.sexe == "Masculin" ?
+                           Text(
+                            "Mr. "+professionel.prenom +" "+professionel.nom,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black54,
+                            ),
+                          )
+                          : Text(
+                            "Mme. "+professionel.prenom +" "+professionel.nom,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black54,
+                            ),
+                          ),
                                   subtitle: const Text("il ya un jour"),
                                   trailing: const Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -237,12 +306,12 @@ class AppointmentScreen extends StatelessWidget{
                                 ),
 
                                 const SizedBox(height: 5),
-                                const Padding(
+                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 10),
                                   child: Text(
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    "Professionnel avec des experiences remarquables",
+                                    professionel.description ,
                                     style: TextStyle(
                                       color: Colors.black,
                                     ),
@@ -255,34 +324,34 @@ class AppointmentScreen extends StatelessWidget{
                       },
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Localisation",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFF0EEFA),
-                        shape: BoxShape.circle,
-                        ),
-                        child:const Icon(
-                          Icons.location_on,
-                          color: Color(0xFF7165D6),
-                        )
-                    ),
-                    title: const Text(
-                      "BAFOUSSAM, Hopital regional",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    subtitle: const Text("adresse du lieu de travail"),
-                  ),
+                  // const SizedBox(height: 10),
+                  // const Text(
+                  //   "Localisation",
+                  //   style: TextStyle(
+                  //     fontSize: 18,
+                  //     fontWeight: FontWeight.w500,
+                  //   ),
+                  // ),
+                  // ListTile(
+                  //   leading: Container(
+                  //     padding: const EdgeInsets.all(10),
+                  //     decoration: const BoxDecoration(
+                  //       color: Color(0xFFF0EEFA),
+                  //       shape: BoxShape.circle,
+                  //       ),
+                  //       child:const Icon(
+                  //         Icons.location_on,
+                  //         color: Color(0xFF7165D6),
+                  //       )
+                  //   ),
+                  //   title: const Text(
+                  //     "BAFOUSSAM, Hopital regional",
+                  //     style: TextStyle(
+                  //       fontWeight: FontWeight.bold,
+                  //     ),
+                  //   ),
+                  //   subtitle: const Text("adresse du lieu de travail"),
+                  // ),
                 ],
               ),
             ),

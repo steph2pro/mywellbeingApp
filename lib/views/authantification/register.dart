@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_recaptcha_v3/flutter_recaptcha_v2.dart';
+// import 'package:flutter_recaptcha_v3/flutter_recaptcha_v2.dart';
 import 'package:mywellbeing/views/widgets/customTextFied.dart';
 import 'package:mywellbeing/views/widgets/loading.dart';
 import 'dart:io';
@@ -30,7 +30,7 @@ class _RegisterState extends State<Register> {
   bool _loading = false;
   String? selectedGender;
   bool _isCaptchaVerified = false;
-  final _recaptchaV2Controller = RecaptchaV2Controller();
+  //final _recaptchaV2Controller = RecaptchaV2Controller();
   // Fonction pour la gestion de l'image
   void selectedImage() async {
     showDialog(

@@ -15,10 +15,7 @@ class SpecialisteList extends StatefulWidget {
 
 class _SpecialisteListState extends State<SpecialisteList> {
   
-  List<String> symptoms = ['Nutrition','kine','bien-etre'];
-   
-  List<String> imgs = ['doctor1.jpeg', 'doctor2.jpeg', 'doctor3.jpeg','doctor4.jpeg'];
-  
+ 
    List<ProfessionelSante> professionnels= [];
   String erreur = "";
   bool _loading = false;
@@ -183,7 +180,7 @@ class _SpecialisteListState extends State<SpecialisteList> {
                           ),
                           professionel.sexe == "Masculin" ?
                            Text(
-                            "Mr. "+professionel.prenom +"  "+ professionel.prenom,
+                            "Mr. "+professionel.prenom ,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
@@ -191,7 +188,7 @@ class _SpecialisteListState extends State<SpecialisteList> {
                             ),
                           )
                           : Text(
-                            "Mme. "+professionel.prenom +"  "+ professionel.prenom,
+                            "Mme. "+professionel.prenom ,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
