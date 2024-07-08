@@ -5,9 +5,9 @@ class PostModel{
   int id_post;
   String titre;
   String type,description;
-  String contenue,date_post;
+  String contenue,date_post,prenom,role,photo;
   int user;
-  PostModel({required this.id_post,required this.titre,required this.type,required this.contenue,required this.description,required this.date_post,required this.user});
+  PostModel({required this.id_post,required this.titre,required this.type,required this.contenue,required this.description,required this.date_post,required this.user,required this.prenom,required this.role,required this.photo});
   // methode pour convertir un json en objet postModel
   // Méthode pour convertir un JSON en objet PostModel
   factory PostModel.fromJson(Map j) {
@@ -18,7 +18,10 @@ class PostModel{
       type: j["type"], 
       contenue: j["contenu"], 
       description: j["description"], 
-      date_post: j["date_envoi"]
+      date_post: j["date_envoi"], 
+      prenom: j["prenom"], 
+      role: j["role"], 
+      photo: j["photo"]
     );
   }
   Map toMap(){

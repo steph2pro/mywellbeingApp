@@ -6,22 +6,27 @@ class ProfessionnelDeSante {
 
     public $id_professionnel_de_sante;
     public $id_utilisateur;
-    public $cv;
+    public $description;
     public $specialite;
     public $horaire_travail;
     public $disponibilite;
-
+    public $photo;
     public function __construct($db) {
         $this->conn = $db;
     }
 
     // Méthode pour créer un nouveau professionnel de santé
-    public function createProfessionnelDeSante($id_utilisateur, $cv, $specialite, $horaire_travail, $disponibilite) {
-        $query = "INSERT INTO " . $this->table_name . " (id_utilisateur, cv, specialite, horaire_travail, disponibilite)
-                  VALUES (?, ?, ?, ?, ?)";
-
+    public function createProfessionnelDeSante($id_utilisateur, $description, $specialite, $horaire_travail, $disponibilite,$photo) {
+        $query = "INSERT INTO " . $this->table_name . " (id_utilisateur, description, specialite, horaire_travail, disponibilite,photo)
+                   VALUES (:id_utilisateur, :description, :specialite, :horaire_travail, :disponibilite, :photo)";
+                  
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("issss", $id_utilisateur, $cv, $specialite, $horaire_travail, $disponibilite);
+        $stmt->bindValue(':id_utilisateur', $id_utilisateur);
+        $stmt->bindValue(':description', $description);
+        $stmt->bindValue(':specialite', $specialite);
+        $stmt->bindValue(':horaire_travail', $horaire_travail);
+        $stmt->bindValue(':disponibilite', $disponibilite);
+        $stmt->bindValue(':photo', $photo);
 
         if ($stmt->execute()) {
             return true;
@@ -45,12 +50,12 @@ class ProfessionnelDeSante {
     }
 
     // Méthode pour mettre à jour les informations d'un professionnel de santé
-    public function updateProfessionnelDeSante($id_professionnel_de_sante, $id_utilisateur, $cv, $specialite, $horaire_travail, $disponibilite) {
-        $query = "UPDATE " . $this->table_name . " SET id_utilisateur = ?, cv = ?, specialite = ?, horaire_travail = ?, disponibilite = ?
+    public function updateProfessionnelDeSante($id_professionnel_de_sante, $id_utilisateur, $description, $specialite, $horaire_travail, $disponibilite) {
+        $query = "UPDATE " . $this->table_name . " SET id_utilisateur = ?, description = ?, specialite = ?, horaire_travail = ?, disponibilite = ?
                   WHERE id_professionnel_de_sante = ?";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("issssi", $id_utilisateur, $cv, $specialite, $horaire_travail, $disponibilite, $id_professionnel_de_sante);
+        $stmt->bind_param("issssi", $id_utilisateur, $description, $specialite, $horaire_travail, $disponibilite, $id_professionnel_de_sante);
 
         if ($stmt->execute()) {
             return true;

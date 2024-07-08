@@ -71,7 +71,14 @@ class _LoginState extends State<Login> {
         
     }
   } catch (error) {
-    print("Erreur de connexion2 : $error");
+    print("Erreur de connexion2 : $error"); 
+      setState(() {
+        erreur="impossible d'etablier une connection avec le serveur! verifiez votre connexion internet et reesayer";
+      _loading = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Impossible d\'effectuer cette opération. Vérifiez votre connexion internet')),
+    );
     
   }
 }

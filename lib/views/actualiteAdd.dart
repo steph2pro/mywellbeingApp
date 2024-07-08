@@ -161,7 +161,8 @@ void addPost(String titre, String type, String contenu, String description, Stri
           setState(() {
             _loading = false;
             erreur = result["message"];
-            
+            //redirection de retour
+            Navigator.pop(context);
           });
         } else {
           setState(() {

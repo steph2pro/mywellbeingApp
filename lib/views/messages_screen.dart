@@ -1,11 +1,12 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:custom_clippers/custom_clippers.dart';
 import 'package:mywellbeing/views/chat_screen.dart';
 
 
 class MessagesScreen extends StatelessWidget {
-  List<String> imgs = ['doctor1.jpg', 'doctor2.jpg', 'doctor3.jpg', 'doctor4.jpg'];
+  List<String> imgs = ['doctor1.jpeg', 'doctor2.jpeg', 'doctor3.jpeg', 'doctor4.jpeg'];
 
   MessagesScreen({super.key});
 
@@ -78,7 +79,8 @@ class MessagesScreen extends StatelessWidget {
           const SizedBox(height: 10), // Ajouter de l'espace
           SizedBox(
             height: 80, // Augmenter la hauteur
-            child: ListView.builder(
+            child: 
+            ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: imgs.length,
               shrinkWrap: true,
@@ -140,7 +142,7 @@ class MessagesScreen extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              "En ligne récemment",
+              "Forum de discution",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -148,35 +150,32 @@ class MessagesScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10), // Ajouter de l'espace
-          ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 6,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return Padding(
+          Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: ListTile(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ChatScreen(),
-                      ),
-                    );
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen()));
+
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) =>  ChatScreen(),
+                    //   ),
+                    // );
                   },
                   leading: CircleAvatar(
                     radius: 30,
-                    backgroundImage: Image.asset("assets/images/${imgs[index % imgs.length]}").image,
+                    backgroundImage: Image.asset("assets/images/actualite2.jpg").image,
                   ),
                   title: const Text(
-                    "M. JOhN",
+                    "Bien-etre et sante",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   subtitle: const Text(
-                    "Bonjour docteur",
+                    "les message en voyee sont lister ici",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -185,16 +184,65 @@ class MessagesScreen extends StatelessWidget {
                     ),
                   ),
                   trailing: const Text(
-                    "12:30",
+                    "14:30",
                     style: TextStyle(
                       fontSize: 15,
                       color: Colors.black54,
                     ),
                   ),
                 ),
-              );
-            },
-          )
+              )
+
+
+
+
+          // ListView.builder(
+          //   physics: const NeverScrollableScrollPhysics(),
+          //   itemCount: 6,
+          //   shrinkWrap: true,
+          //   itemBuilder: (context, index) {
+          //     return Padding(
+          //       padding: const EdgeInsets.only(bottom: 10),
+          //       child: ListTile(
+          //         onTap: () {
+          //           Navigator.push(
+          //             context,
+          //             MaterialPageRoute(
+          //               builder: (context) => const ChatScreen(),
+          //             ),
+          //           );
+          //         },
+          //         leading: CircleAvatar(
+          //           radius: 30,
+          //           backgroundImage: Image.asset("assets/images/${imgs[index % imgs.length]}").image,
+          //         ),
+          //         title: const Text(
+          //           "M. JOhN",
+          //           style: TextStyle(
+          //             fontSize: 18,
+          //             fontWeight: FontWeight.bold,
+          //           ),
+          //         ),
+          //         subtitle: const Text(
+          //           "Bonjour docteur",
+          //           maxLines: 1,
+          //           overflow: TextOverflow.ellipsis,
+          //           style: TextStyle(
+          //             fontSize: 16,
+          //             color: Colors.black54,
+          //           ),
+          //         ),
+          //         trailing: const Text(
+          //           "12:30",
+          //           style: TextStyle(
+          //             fontSize: 15,
+          //             color: Colors.black54,
+          //           ),
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // )
         ],
       ),
     );

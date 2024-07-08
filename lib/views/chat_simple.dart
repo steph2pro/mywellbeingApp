@@ -2,15 +2,20 @@
 import 'package:custom_clippers/custom_clippers.dart';
 import 'package:flutter/material.dart';
 
-class ChatSimple extends StatelessWidget{
-  const ChatSimple({super.key});
+class ChatSimple extends StatefulWidget {
+  @override
+  _ChatSimpleState createState() => _ChatSimpleState();
+}
 
+class _ChatSimpleState extends State<ChatSimple> {
+  
   @override
   Widget build(BuildContext context){
     return  Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(padding: const EdgeInsets.only(right: 80),
+        Padding(
+        padding: const EdgeInsets.only(right: 80),
         child: ClipPath(
          clipper: UpperNipMessageClipper(MessageType.receive),
          child: Container(

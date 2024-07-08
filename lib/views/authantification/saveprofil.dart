@@ -1,16 +1,18 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mywellbeing/models/profilModel/profilModel.dart';
 import 'package:mywellbeing/models/userModel/userModel.dart';
+import 'package:mywellbeing/views/widgets/loading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:mywellbeing/views/widgets/customTextFied.dart';
 
-String? globalImagePath; // Variable globale pour mémoriser le chemin de l'image
 
 class SaveProfil extends StatefulWidget {
   const SaveProfil({super.key});
@@ -22,8 +24,7 @@ class SaveProfil extends StatefulWidget {
 }
 
 class _SaveProfilState extends State<SaveProfil> {
-  Uint8List? _image;
-  String _imagepath = "";
+
 
   // Controllers for the text fields 
   final TextEditingController ageController = TextEditingController();
@@ -35,56 +36,8 @@ class _SaveProfilState extends State<SaveProfil> {
 // Initialisation de la clé de validation
   final _key = GlobalKey<FormState>();
   // Fonction pour la gestion de l'image
-  void selectedImage() async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Choisissez une option'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.photo),
-                title: Text('Galerie'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await pickImage(ImageSource.gallery);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.camera_alt),
-                title: Text('Caméra'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await pickImage(ImageSource.camera);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  
 
-  Future<void> pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
-
-    if (pickedFile != null) {
-      Uint8List img = await pickedFile.readAsBytes();
-      setState(() {
-        _image = img;
-      });
-
-      String newPath = await saveImage(File(pickedFile.path));
-      setState(() {
-        _imagepath = newPath;
-        globalImagePath = newPath;
-      });
-      print("Image saved at: $newPath");
-    }
-  }
   
     var id_utilisateur="1";
    //lecture de l'utilisateur
@@ -94,7 +47,6 @@ class _SaveProfilState extends State<SaveProfil> {
   void initState() {
     super.initState();
     _loadUser();
-    LoadImage();
   }
 
   void _loadUser() async {
@@ -108,42 +60,17 @@ class _SaveProfilState extends State<SaveProfil> {
    }
   }
  
-    
+      String erreur="";
+   bool _loading=false;
 
-  // Fonction pour enregistrer l'image
-  Future<String> saveImage(File image) async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final assetsPath = Directory('${directory.path}/assets/images/SaveProfiles');
-      if (!await assetsPath.exists()) {
-        await assetsPath.create(recursive: true);
-      }
-      final random = Random();
-      final newPath = path.join(assetsPath.path, 'userImg_${random.nextInt(10000)}.jpg');
-      final savedImage = await image.copy(newPath);
-      await saveImagePath(savedImage.path);
-      return savedImage.path;
-    } catch (e) {
-      print('Error saving image: $e');
-      return '';
-    }
-  }
-
-  Future<void> saveImagePath(String path) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString("imagepath", path);
-  }
-
-  void LoadImage() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _imagepath = prefs.getString("imagepath") ?? '';
-      globalImagePath = _imagepath;
-    });
-  }
+  
 
   // Fonction pour enregistrer les données
 Future<void> registerSaveProfile() async {
+  setState(() {
+    erreur = "";
+    _loading = true;
+  });
   try {
     final age = ageController.text;
     final taille = tailleController.text;
@@ -151,10 +78,15 @@ Future<void> registerSaveProfile() async {
     final ville = villeController.text;
     final objectif = objectifController.text;
     final id = id_utilisateur;
-    if (_image == null || age.isEmpty || taille.isEmpty || poids.isEmpty || ville.isEmpty || objectif.isEmpty) {
+
+    if (age.isEmpty || taille.isEmpty || poids.isEmpty || ville.isEmpty || objectif.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('All fields are required')),
+        SnackBar(content: Text('Tous les champs sont obligatoires')),
       );
+      setState(() {
+        erreur = "";
+        _loading = false;
+      });
       return;
     }
 
@@ -165,33 +97,60 @@ Future<void> registerSaveProfile() async {
       ..fields['poids'] = poids
       ..fields['ville'] = ville
       ..fields['id_utilisateur'] = id
-      ..fields['objectif'] = objectif
-      ..files.add(http.MultipartFile.fromBytes(
-        'photo',
-        _image!,
-        filename: 'userImg_${DateTime.now().millisecondsSinceEpoch}.jpg',
-      ));
+      ..fields['objectif'] = objectif;
 
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
     print('Response body: ${response.body}');
+
     if (response.statusCode == 200) {
       final responseBody = response.body;
-      print('Response body: $responseBody'); // Afficher la réponse dans la console
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('votre profil a ete enregistrer avec succes')),
-      );
+      var data = jsonDecode(response.body);
+      var result = data['data'];
+      print('Response body2: $responseBody'); 
+      
+      int succes = result["success"] ?? 0; // Ajout d'une vérification de null
+
+      if (succes == 1) {
+        setState(() {
+          _loading = false;
+          erreur = result["message"] ?? ""; // Ajout d'une vérification de null
+          print(result["profil"]);
+          print(erreur);
+          var profil = result["profil"];
+          Profile.saveProfile(Profile.fromJson(profil));
+          // Afficher la réponse dans le bas de l'écran
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Votre profil a été enregistré avec succès')),
+          );
+           Navigator.pop(context); // Retour à la page précédente
+        }); 
+      } else {
+        setState(() {
+          print(result["message"] ?? "Erreur inconnue");
+          erreur = result["message"] ?? "Erreur inconnue"; // Ajout d'une vérification de null
+          _loading = false;
+        });
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('votre profil n\'as pas pu etre enregistre')),
+        SnackBar(content: Text('Votre profil n\'a pas pu être enregistré')),
       );
+      setState(() {
+        erreur = "";
+        _loading = false;
+      });
     }
   } catch (e) {
-    print('Error registering SaveProfile: $e');
-    // Gérer l'erreur ici, par exemple afficher un message d'erreur à l'utilisateur
+    print('Erreur d\'enregistrement : $e');
+    setState(() {
+      _loading = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Impossible d\'effectuer cette opération. Vérifiez votre connexion internet')),
+    );
   }
 }
-
 
 
 
@@ -211,7 +170,8 @@ Widget build(BuildContext context) {
       iconTheme: IconThemeData(color: Colors.white),
       backgroundColor: Colors.blueAccent[400],
     ),
-    body: Center(
+    body: _loading ? Loading()
+    :Center(
       child: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(25),
@@ -231,35 +191,35 @@ Widget build(BuildContext context) {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Stack(
-                        children: [
-                          _image != null
-                              ? CircleAvatar(
-                                  radius: 64,
-                                  backgroundImage: MemoryImage(_image!),
-                                )
-                              : const CircleAvatar(
-                                  radius: 64,
-                                  backgroundImage: AssetImage("assets/images/SaveProfile.png"),
-                                ),
-                          Positioned(
-                            width: 40,
-                            height: 70,
-                            child: CircleAvatar(
-                              radius: 50,
-                              backgroundColor: Colors.blueAccent,
-                              child: IconButton(
-                                onPressed: selectedImage,
-                                icon: _image != null ? const Icon(Icons.check) : const Icon(Icons.add_a_photo),
-                                color: Colors.white,
-                                iconSize: 25,
-                              ),
-                            ),
-                            bottom: -10,
-                            left: 80,
-                          ),
-                        ],
-                      ),
+                      // Stack(
+                      //   children: [
+                      //     _image != null
+                      //         ? CircleAvatar(
+                      //             radius: 64,
+                      //             backgroundImage: MemoryImage(_image!),
+                      //           )
+                      //         : const CircleAvatar(
+                      //             radius: 64,
+                      //             backgroundImage: AssetImage("assets/images/SaveProfile.png"),
+                      //           ),
+                      //     Positioned(
+                      //       width: 40,
+                      //       height: 70,
+                      //       child: CircleAvatar(
+                      //         radius: 50,
+                      //         backgroundColor: Colors.blueAccent,
+                      //         child: IconButton(
+                      //           onPressed: selectedImage,
+                      //           icon: _image != null ? const Icon(Icons.check) : const Icon(Icons.add_a_photo),
+                      //           color: Colors.white,
+                      //           iconSize: 25,
+                      //         ),
+                      //       ),
+                      //       bottom: -10,
+                      //       left: 80,
+                      //     ),
+                      //   ],
+                      // ),
                     ],
                   ),
                 ),

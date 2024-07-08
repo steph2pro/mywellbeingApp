@@ -2,12 +2,15 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mywellbeing/views/professionel.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mywellbeing/models/profilModel/profilModel.dart';
 import 'package:mywellbeing/views/authantification/saveprofil.dart';
 import 'package:mywellbeing/views/programmeList.dart';
 import 'package:mywellbeing/models/userModel/userModel.dart';
 import 'package:mywellbeing/models/profilModel/profilModel.dart';
+import 'package:mywellbeing/models/userModel/professionelModel.dart';
+
 import 'package:mywellbeing/views/homePage.dart';
 import 'package:mywellbeing/views/pagePincipal.dart';
 import 'dart:convert';
@@ -66,12 +69,14 @@ class _MyProfileState extends State<MyProfile> {
   ];
 
   UserModel? _user;
-
+  Profile? _profil;
+  ProfessionelSante? _prof;
   @override
   void initState() {
     super.initState();
     _loadUser();
-    
+    _loadProfil();
+    _loadProfessionel();
   }
 
   void _loadUser() async {
@@ -81,6 +86,24 @@ class _MyProfileState extends State<MyProfile> {
     });
     
     
+  }
+   void _loadProfil() async {
+    Profile? profil = await ProfilService.infoProfil();
+    setState(() {
+      _profil = profil;
+    });
+    //print(_profil!.age);
+    
+    
+  }
+   void _loadProfessionel() async {
+    ProfessionelSante? prof = await ProfessionelService.infoProfessionel();
+    setState(() {
+      _prof = prof;
+      print("8888888    contenue     88888888888");
+      print(_prof);
+      print(_prof!.description);
+    });
   }
  
  
@@ -145,7 +168,7 @@ class _MyProfileState extends State<MyProfile> {
                             children: [
                               CircleAvatar(
                                 radius: 35,
-                                backgroundImage: _user != null
+                                backgroundImage: (_user != null || _user!.photo != "")
                                   ? NetworkImage('https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/profils/${_user!.photo}') as ImageProvider<Object>
                                     :AssetImage('assets/images/profile.png'),
                               ),
@@ -212,7 +235,7 @@ class _MyProfileState extends State<MyProfile> {
                                         );
                                       },
                                       child: const Icon(
-                                        Icons.add,
+                                        Icons.edit_square,
                                         color: Colors.white,
                                         size: 25,
                                       ),
@@ -245,21 +268,167 @@ class _MyProfileState extends State<MyProfile> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        const Text(
-                          "Informations Personnalisées",
+                      _profil != null ?
+                        Column(
+                          children: [
+                            const Text(
+                          "Informations du profil utilisisateur",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(height: 5),
-                        const Text(
-                          "Vos activités et vos programmes suivis sont les suivants:",
+                        
+                            
+                        ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFF0EEFA),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.location_on,
+                              color: Color(0xFF7165D6),
+                            ),
+                          ),
+                          title: _profil !=null ?
+                          Text(_profil!.villeResidence,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),)
+                          :Container(),
+                          //const Text(
+                          //   "BAFOUSSAM, Quartier AWoussa"
+                          // ),
+                          subtitle: const Text("Adresse de résidence"),
+                        ),ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFF0EEFA),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.spa,
+                              color: Color(0xFF7165D6),
+                            ),
+                          ),
+                          title: const Text(
+                            "age, taille, poids",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: _profil !=null ?
+                          Text(_profil!.age +' Ans ,'+_profil!.taille+' M, '+_profil!.poids + ' Kgs ')
+                          :Container(),
+                        ),ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFF0EEFA),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.directions_run,
+                              color: Color(0xFF7165D6),
+                            ),
+                          ),
+                          title: const Text(
+                            "Objectif",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: _profil !=null ?
+                          Text(_profil!.objectif)
+                          :Container(),
+                        )
+                          ],
+                        )
+                      : Container(),
+                      // proffesionnel
+                      _prof != null ?
+                        Column(
+                          children: [
+                            const Text(
+                          "Informations du profil de Professionel de sante",
                           style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black54,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
+                        const SizedBox(height: 5),
+                        ListTile(
+                          leading: CircleAvatar(
+                                            radius: 35,
+                                            backgroundImage: NetworkImage("https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/profils/${_prof!.photo}"),
+
+                                          ),
+                          title:  Text(
+                            _prof!.specialite,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: _prof !=null ?
+                          Text(_prof!.description)
+                          :Container(),
+                        ),
+                          ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFF0EEFA),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.speaker_sharp,
+                              color: Color(0xFF7165D6),
+                            ),
+                          ),
+                          title: const Text(
+                            "Disponibile",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: _prof !=null ?
+                          Text(_prof!.disponibilite )
+                          
+                          :Container(),
+                        ),ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFF0EEFA),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.hourglass_bottom_sharp,
+                              color: Color(0xFF7165D6),
+                            ),
+                          ),
+                          title: const Text(
+                            "horaire de travail",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: _prof !=null ?
+                          Text(_prof!.horaire)
+                          :Container(),
+                        ),
+                          ],
+                        )
+                      : Container(),
+                      
+
+
+
+
                         const SizedBox(height: 10),
                         Row(
                           children: [
@@ -421,33 +590,8 @@ class _MyProfileState extends State<MyProfile> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        const Text(
-                          "Localisation",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        ListTile(
-                          leading: Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFF0EEFA),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.location_on,
-                              color: Color(0xFF7165D6),
-                            ),
-                          ),
-                          title: const Text(
-                            "BAFOUSSAM, Quartier AWoussa",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          subtitle: const Text("Adresse de résidence"),
-                        ),
+                        
+                        
                         Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -498,20 +642,43 @@ class _MyProfileState extends State<MyProfile> {
                   
                 ]
               ),
-            )
-          
-        
-        
-        ,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigator.push(context, MaterialPageRoute(builder: (context) => ActualiteAdd()));
-        },
-        tooltip: 'Increment',
-        backgroundColor: Colors.blueAccent, // Définit la couleur du bouton en bleu
-        foregroundColor: Colors.white, // Définit la couleur de l'icône en blanc
-        child: const Icon(Icons.edit),
+            ) ,
+            floatingActionButton: Stack(
+        children: [
+          Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => SaveProfil()));
+              },
+            tooltip: 'creer un profil utilisateur',
+            backgroundColor: Colors.blueAccent, // Définit la couleur du bouton en bleu
+            foregroundColor: Colors.white, // Définit la couleur de l'icône en blanc
+            child: const Icon(Icons.add_reaction_sharp),
+            ),
+          ),
+          _user!.role !="professionel"?
+          Padding(
+            padding: const EdgeInsets.only(bottom: 70.0),
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Professionel()));
+                },
+                tooltip: 'creer un profil pro',
+                backgroundColor: Colors.greenAccent,
+                foregroundColor: Colors.white,
+                child: const Icon(Icons.add_box, size: 40),
+              ),
+            ),
+          )
+          :Container(),
+        ],
       ),
+
+
+  
     );
   }
 }

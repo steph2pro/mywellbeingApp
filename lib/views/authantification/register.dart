@@ -167,6 +167,12 @@ void creationCompte(String nom, String prenom, String email, String pass, String
   } catch (e) {
     print('Error de l\'enregistrement: $e');
     // Gérer l'erreur ici, par exemple afficher un message d'erreur à l'utilisateur
+    setState(() {
+      _loading = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Impossible d\'effectuer cette opération. Vérifiez votre connexion internet')),
+    );
   }
 }
 
@@ -282,7 +288,7 @@ void creationCompte(String nom, String prenom, String email, String pass, String
                                         )
                                       : const CircleAvatar(
                                           radius: 64,
-                                          backgroundImage: AssetImage("assets/images/SaveProfile.png"),
+                                          backgroundImage: AssetImage("assets/images/profile.png"),
                                         ),
                                   Positioned(
                                     width: 40,

@@ -1,19 +1,77 @@
 
 import 'package:flutter/material.dart';
+import 'package:mywellbeing/api/api.dart';
+import 'package:mywellbeing/models/userModel/professionelModel.dart';
 import 'package:mywellbeing/views/appointmentScreen.dart';
+import 'package:mywellbeing/views/widgets/loading.dart';
 
-// ignore: must_be_immutable
-class SpecialisteList extends StatelessWidget {
-   SpecialisteList({super.key});
+class SpecialisteList extends StatefulWidget {
+   const SpecialisteList({super.key});
+  
+
+  @override
+  State<SpecialisteList> createState() => _SpecialisteListState();
+}
+
+class _SpecialisteListState extends State<SpecialisteList> {
+  
   List<String> symptoms = ['Nutrition','kine','bien-etre'];
    
-  List<String> imgs = ['doctor1.jpg', 'doctor2.jpg', 'doctor3.jpg','doctor4.jpg'];
- 
+  List<String> imgs = ['doctor1.jpeg', 'doctor2.jpeg', 'doctor3.jpeg','doctor4.jpeg'];
+  
+   List<ProfessionelSante> professionnels= [];
+  String erreur = "";
+  bool _loading = false;
+
+  Future<void> getdata() async {
+    setState(() {
+      _loading = true;
+    });
+
+    try {
+      var data = await Api.getProfessionel();
+      if (data != null) {
+        professionnels.clear();
+        for (Map i in data) {
+          setState(() {
+            professionnels.add(ProfessionelSante.fromJson(i));
+          });
+          
+        }
+        print("***********888888888888888");
+        print(professionnels);
+        setState(() {
+        _loading = false;
+      });
+      }
+    } catch (e) {
+      print("Error: $e");
+      setState(() {
+        erreur = e.toString();
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getdata();
+  }
+
+
+
+
+
  @override
    Widget build(BuildContext context){
     return  SingleChildScrollView(
     padding: const EdgeInsets.only(top:40),
-    child: Column(
+    child: _loading ? Loading()
+    :Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
             const SizedBox(
@@ -34,8 +92,9 @@ class SpecialisteList extends StatelessWidget {
                 child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
-                  itemCount: symptoms.length,
+                  itemCount: professionnels.length,
                   itemBuilder: (context , index){
+                    final professionel=professionnels[index];
                 return Container(
                   margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -52,7 +111,7 @@ class SpecialisteList extends StatelessWidget {
 
                     ),
                     child: Center(
-                      child: Text(symptoms[index],
+                      child: Text(professionel.specialite,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -81,13 +140,14 @@ class SpecialisteList extends StatelessWidget {
                 
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount:2,
-                  childAspectRatio: 0.75, 
+                  childAspectRatio: 0.85, 
                   
                   ),
-                  itemCount: 4,
+                  itemCount: professionnels.length,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index){
+                    final professionel=professionnels[index];
                    return  InkWell(
                    onTap: (){
                     Navigator.push(
@@ -119,10 +179,19 @@ class SpecialisteList extends StatelessWidget {
                           CircleAvatar(
                             radius: 35,
                             
-                          backgroundImage: Image.asset("assets/images/${imgs[index]}").image,
+                          backgroundImage: NetworkImage("https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/profils/${professionel.photo}"),
                           ),
-                          const Text(
-                            "MR ASSAN",
+                          professionel.sexe == "Masculin" ?
+                           Text(
+                            "Mr. "+professionel.prenom +"  "+ professionel.prenom,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black54,
+                            ),
+                          )
+                          : Text(
+                            "Mme. "+professionel.prenom +"  "+ professionel.prenom,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
@@ -132,8 +201,8 @@ class SpecialisteList extends StatelessWidget {
                           Container(
                             padding: EdgeInsets.only(bottom: 20), // Ajoute un padding de 16 pixels de tous les côtés
                             
-                            child: const Text(
-                            "Therapist",
+                            child:  Text(
+                            professionel.specialite,
                             style: TextStyle(
                               color: Colors.black54,
                             ),

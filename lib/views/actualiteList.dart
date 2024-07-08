@@ -111,7 +111,39 @@ class _ActualiteListState extends State<ActualiteList> {
                                                 ],
                                               ),
                                     child: Column(
+                                      
                                     children: [
+                                    Row(
+                                        children: [
+                                          //profil
+                                          CircleAvatar(
+                                            radius: 35,
+                                            backgroundImage: NetworkImage("https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/profils/${post.photo}"),
+
+                                          ),
+                                          //texte a cotee du profil
+                                          Container(
+                                            margin: EdgeInsets.only(left: 10),
+                                            
+                                            child: Column(
+                                              children: [
+                                                Text(
+                                                  post.prenom,
+                                                  style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: Colors.grey[700]),
+                                                ),
+                                                Text(
+                                                  post.role,
+                                                  style: TextStyle(fontSize: 17,color: Colors.grey[700]),
+                                                ),
+                                                
+                                              ],
+                                            ),
+                                          )
+                                        ]
+                                      ),
+
+
+
                                       Text(post.titre,
                                       style: TextStyle(fontSize: 20,color: Colors.grey[900],fontWeight: FontWeight.w500)
                                       ,textAlign: TextAlign.center,
@@ -204,6 +236,38 @@ class _ActualiteListState extends State<ActualiteList> {
                                               ),
                                     child: Column(
                                     children: [
+                                    Row(
+                                        children: [
+                                          //profil
+                                          CircleAvatar(
+                                            radius: 35,
+                                            backgroundImage: NetworkImage("https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/profils/${post.photo}"),
+
+                                          ),
+                                          //texte a cotee du profil
+                                          Container(
+                                            margin: EdgeInsets.only(left: 10),
+                                            
+                                            child: Column(
+                                              children: [
+                                                Text(
+                                                  post.prenom,
+                                                  style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: Colors.grey[700]),
+                                                ),
+                                                Text(
+                                                  post.role,
+                                                  style: TextStyle(fontSize: 17,color: Colors.grey[700]),
+                                                ),
+                                                
+                                              ],
+                                            ),
+                                          )
+                                        ]
+                                      ),
+
+
+
+
                                       Text(post.titre,
                                       style: TextStyle(fontSize: 20,color: Colors.grey[900],fontWeight: FontWeight.w500)
                                       ,textAlign: TextAlign.center,

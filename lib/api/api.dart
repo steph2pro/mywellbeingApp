@@ -36,6 +36,28 @@ class Api{
       print("Erreur de connexion 2: $error");
     }
   }
+ static getMessage() async{
+    try{
+      final response=await http.get(Uri.parse(Url.getMessage));
+      print("Donne : ${response.body}");
+      if (response.statusCode == 200) {
+          return jsonDecode(response.body);
+      }else return null;
+      }catch (error) {
+      print("Erreur de connexion 2: $error");
+    }
+  }
+  static getProfessionel() async{
+    try{
+      final response=await http.get(Uri.parse(Url.getPro));
+      print("Donne : ${response.body}");
+      if (response.statusCode == 200) {
+          return jsonDecode(response.body);
+      }else return null;
+      }catch (error) {
+      print("Erreur de connexion 2: $error");
+    }
+  }
 }
 
 
@@ -43,4 +65,6 @@ class Api{
 class Url{
   static String urlPost="https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/addPost.php";
   static String getPost="https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/readPost.php";
+  static String getMessage="https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/readMessage.php";
+  static String getPro="https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/readProf.php";
 }
