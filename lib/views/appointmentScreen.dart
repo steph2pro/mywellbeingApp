@@ -7,20 +7,23 @@ import 'package:mywellbeing/models/userModel/professionelModel.dart';
 import 'package:mywellbeing/views/widgets/loading.dart';
 
 class AppointmentScreen extends StatefulWidget {
-  // const AppointmentScreen({super.key});
-  
+   final int idProf;
+    AppointmentScreen({super.key,required this.idProf});
+  // var id=thisidPof
 
   @override
   State<AppointmentScreen> createState() => _AppointmentScreenState();
 }
 
 class _AppointmentScreenState extends State<AppointmentScreen> {
-
+ late int id;
 // ignore: use_key_in_widget_constructors
 //class AppointmentScreen extends StatelessWidget{
    List<String> imgs = ['doctor1.jpg', 'doctor2.jpg', 'doctor3.jpg', 'doctor4.jpg'];
    
    List<ProfessionelSante> professionnels= [];
+   List<ProfessionelSante> prof= [];
+
   String erreur = "";
   bool _loading = false;
 
@@ -30,8 +33,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     });
 
     try {
+      id = widget.idProf;
       var data = await Api.getProfessionel();
-      if (data != null) {
+      var data2= await Api.getProf(id.toString());
+      if (data != null && data2 != null) {
         professionnels.clear();
         for (Map i in data) {
           setState(() {
@@ -39,8 +44,19 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           });
           
         }
+        prof.clear();
+        for (Map i in data2) {
+          setState(() {
+            prof.add(ProfessionelSante.fromJson(i));
+          });
+          
+        }
         print("***********888888888888888");
         print(professionnels);
+        print("*********iddddddddddddddddddddddddd");
+    
+        
+        print(prof);
         setState(() {
         _loading = false;
       });
@@ -107,21 +123,38 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const CircleAvatar(radius: 35,
-                      backgroundImage: AssetImage("assets/images/doctor1.jpg"),
+                       CircleAvatar(radius: 35,
+                      backgroundImage: NetworkImage("https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/profils/${prof[0].photo}"),
                       ),
                       const SizedBox(height: 15),
-                      const Text(
-                        "M. ASSAN",
-                        style: TextStyle(
-                          fontSize: 23,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
-                      ),
+                      //  Text(
+                      //   prof[0].nom,
+                      //   style: TextStyle(
+                      //     fontSize: 23,
+                      //     fontWeight: FontWeight.w500,
+                      //     color: Colors.white,
+                      //   ),
+                      // ),
+                      prof[0].sexe == "Masculin" ?
+                           Text(
+                            "Mr. "+prof[0].prenom +" "+prof[0].nom,
+                            style: TextStyle(
+                              fontSize: 23,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          )
+                          : Text(
+                            "Mme. "+prof[0].prenom +" "+prof[0].nom,
+                            style: TextStyle(
+                              fontSize: 23,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          ),
                       const SizedBox(height: 5),
-                      const Text(
-                        "KINESITHERAPEUTE",
+                       Text(
+                        prof[0].specialite ,
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -192,8 +225,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     ),
                   ),
                   const SizedBox(height: 5),
-                  const Text(
-                    "medecin diplome de la fmbs yde",
+                   Text(
+                    prof[0].description ,
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black54,
@@ -203,7 +236,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   Row(
                     children: [
                       const Text(
-                        "Reviews",
+                        "Revue",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
@@ -231,7 +264,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       const Spacer(),
                         TextButton(
                           onPressed: () {},
-                          child: const Text("See all"),
+                          child: const Text("voir plus"),
                         ),
                     ],
                   ),
@@ -286,7 +319,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                               color: Colors.black54,
                             ),
                           ),
-                                  subtitle: const Text("il ya un jour"),
+                                  subtitle:  Text(professionel.specialite),
                                   trailing: const Row(
                                     mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment: MainAxisAlignment.center,

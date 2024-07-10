@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mywellbeing/api/api.dart';
 import 'package:mywellbeing/models/userModel/postModel.dart';
+import 'package:mywellbeing/models/userModel/userModel.dart';
 import 'package:mywellbeing/views/actualiteAdd.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -66,16 +67,31 @@ class _ActualiteListState extends State<ActualiteList> {
       });
     }
   }
+  late UserModel? _user;
+
+  void _loadUser() async {
+    UserModel? user = await UserService.infoUser();
+    setState(() {
+        _user = user;
+      if(user != null){
+      }
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _loadUser();
     getdata();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return _user == null ?
+        Scaffold(
+          body: Container(),
+        )
+        :Scaffold(
       appBar: AppBar(
         title: Text('Liste des actualites'),
       ),
@@ -358,11 +374,13 @@ class _ActualiteListState extends State<ActualiteList> {
               child: const Icon(Icons.update, size: 30),
             ),
           ),
+          _user !=null?
           Padding(
             padding: const EdgeInsets.only(bottom: 70.0),
             child: Align(
               alignment: Alignment.bottomRight,
-              child: FloatingActionButton(
+              child: _user!.role !="simple_utilisateur"?
+              FloatingActionButton(
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => ActualiteAdd()));
                 },
@@ -370,11 +388,14 @@ class _ActualiteListState extends State<ActualiteList> {
                 backgroundColor: Colors.blueAccent,
                 foregroundColor: Colors.white,
                 child: const Icon(Icons.add_circle),
-              ),
+              )
+              :Container(),
             ),
-          ),
+          )
+          :Container(),
         ],
       ),
     );
-  }
+
+      }
 }

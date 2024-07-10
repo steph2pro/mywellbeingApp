@@ -20,7 +20,7 @@ class Profile {
     required this.objectif,
   });
 
-  factory Profile.fromJson(Map<String, dynamic> json) {
+  factory Profile.fromJson(json) {
     return Profile(
       idProfil: json['id_profil'],
       id: json['id_utilisateur'],

@@ -15,17 +15,14 @@ class PagePincipal extends StatefulWidget {
 }
 class _PagePincipalState extends State<PagePincipal> {
   int _currentIndex = 0;
-
   Future<void> _loadContent() async {
     await Future.delayed(Duration(seconds: 1)); // Simule un délai de chargement
   }
-
   setCurrentIndex(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

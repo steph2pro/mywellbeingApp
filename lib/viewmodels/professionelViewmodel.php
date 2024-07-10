@@ -31,10 +31,10 @@ switch ($action) {
                         // Créer un nouvel utilisateur
                         $create = $profBD->createProfessionnelDeSante($id_utilisateur, $description, $specialite,$horaire, $dispo,$newName);
                         if ($create) {
-                            $query = "SELECT * FROM professionnel_de_sante WHERE id_utilisateur = :id_utilisateur";
-        
+                            // $query = "SELECT * FROM professionnel_de_sante WHERE id_utilisateur = :id_utilisateur";
+        $query = "SELECT * FROM utilisateur u INNER JOIN professionnel_de_sante p ON(u.id_utilisateur=p.id_utilisateur) WHERE u.role='professionel' AND p.id_professionnel_de_sante=$id_utilisateur";
                             $stmt = $connection->prepare($query);
-                            $stmt->bindValue(':id_utilisateur', $id_utilisateur);
+                            // $stmt->bindValue(':id_utilisateur', $id_utilisateur);
                             $stmt->execute();
                             $professionel = $stmt->fetch(PDO::FETCH_ASSOC);
                             if ($stmt->rowCount() > 0) {

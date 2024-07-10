@@ -40,15 +40,12 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
-    defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "steph.apk.com.mywellbeing"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
+   defaultConfig {
+        applicationId "steph.apk.com.mywellbeing" // Remplacez par votre propre ID d'application
         minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
     }
 
     buildTypes {

@@ -3,12 +3,67 @@
 import 'package:flutter/material.dart';
 import 'package:custom_clippers/custom_clippers.dart';
 import 'package:mywellbeing/views/chat_screen.dart';
+import 'package:mywellbeing/api/api.dart';
+import 'package:mywellbeing/models/userModel/professionelModel.dart';
+import 'package:mywellbeing/views/widgets/loading.dart';
+
+class MessagesScreen extends StatefulWidget {
+   const MessagesScreen({super.key});
+  
+
+  @override
+  State<MessagesScreen> createState() => _MessagesScreenState();
+}
+
+class _MessagesScreenState extends State<MessagesScreen> {
+  
 
 
-class MessagesScreen extends StatelessWidget {
+// class MessagesScreen extends StatelessWidget {
+//   MessagesScreen({super.key});
   List<String> imgs = ['doctor1.jpeg', 'doctor2.jpeg', 'doctor3.jpeg', 'doctor4.jpeg'];
+List<ProfessionelSante> professionnels= [];
+  String erreur = "";
+  bool _loading = false;
 
-  MessagesScreen({super.key});
+  Future<void> getdata() async {
+    setState(() {
+      _loading = true;
+    });
+
+    try {
+      var data = await Api.getProfessionel();
+      if (data != null) {
+        professionnels.clear();
+        for (Map i in data) {
+          setState(() {
+            professionnels.add(ProfessionelSante.fromJson(i));
+          });
+          
+        }
+        print("***********888888888888888");
+        print(professionnels);
+        setState(() {
+        _loading = false;
+      });
+      }
+    } catch (e) {
+      print("Error: $e");
+      setState(() {
+        erreur = e.toString();
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getdata();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +74,7 @@ class MessagesScreen extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              "Messages",
+              "Discution",
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -51,7 +106,7 @@ class MessagesScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: TextFormField(
                         decoration: const InputDecoration(
-                          hintText: "Search",
+                          hintText: "Recherche",
                           border: InputBorder.none,
                         ),
                       ),
@@ -69,7 +124,7 @@ class MessagesScreen extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              "En ligne",
+              " Professionel En ligne",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -77,14 +132,16 @@ class MessagesScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10), // Ajouter de l'espace
-          SizedBox(
+          _loading ? Loading()
+          :SizedBox(
             height: 80, // Augmenter la hauteur
             child: 
             ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: imgs.length,
+              itemCount: professionnels.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
+                final prof=professionnels[index];
                 return Container(
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                   width: 65,
@@ -109,10 +166,12 @@ class MessagesScreen extends StatelessWidget {
                           width: 65,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(30),
-                            child: Image.asset(
-                              'assets/images/${imgs[index % imgs.length]}',
-                              fit: BoxFit.cover,
-                            ),
+                            child: 
+                            Image.network("https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/profils/${prof.photo}"),
+                            // Image.asset(
+                            //   'assets/images/${imgs[index % imgs.length]}',
+                            //   fit: BoxFit.cover,
+                            // ),
                           ),
                         ),
                       ),

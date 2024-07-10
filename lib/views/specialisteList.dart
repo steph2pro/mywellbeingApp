@@ -148,9 +148,9 @@ class _SpecialisteListState extends State<SpecialisteList> {
                    return  InkWell(
                    onTap: (){
                     Navigator.push(
-                      context,
+                      context, 
                       MaterialPageRoute(
-                        builder:(context) => AppointmentScreen(), 
+                        builder:(context) => AppointmentScreen(idProf: professionel.id_prof,), 
                       ));
                    },
    

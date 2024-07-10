@@ -3,12 +3,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mywellbeing/views/professionel.dart';
+import 'package:mywellbeing/views/widgets/loading.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mywellbeing/models/profilModel/profilModel.dart';
 import 'package:mywellbeing/views/authantification/saveprofil.dart';
 import 'package:mywellbeing/views/programmeList.dart';
 import 'package:mywellbeing/models/userModel/userModel.dart';
 import 'package:mywellbeing/models/profilModel/profilModel.dart';
+import 'package:mywellbeing/api/api.dart';
 import 'package:mywellbeing/models/userModel/professionelModel.dart';
 
 import 'package:mywellbeing/views/homePage.dart';
@@ -70,19 +72,28 @@ class _MyProfileState extends State<MyProfile> {
 
   UserModel? _user;
   Profile? _profil;
-  ProfessionelSante? _prof;
+  ProfessionelSante? _prof; 
   @override
   void initState() {
     super.initState();
+    
+    print("load user^^^^^^^^^^^^^^^^^^");
     _loadUser();
+    print("get data^^^^^^^^^^^^^^^^^^");
+    getdata();
     _loadProfil();
-    _loadProfessionel();
+    //_loadProfessionel();
+    
   }
 
   void _loadUser() async {
     UserModel? user = await UserService.infoUser();
     setState(() {
-      _user = user;
+       _user = user;
+      if(_user !=null){
+       
+        //id =_user!.id_utilisateur;
+      }
     });
     
     
@@ -96,31 +107,76 @@ class _MyProfileState extends State<MyProfile> {
     
     
   }
-   void _loadProfessionel() async {
-    ProfessionelSante? prof = await ProfessionelService.infoProfessionel();
+  //  void _loadProfessionel() async {
+  //   ProfessionelSante? prof = await ProfessionelService.infoProfessionel();
+  //   setState(() {
+  //     _prof = prof;
+  //     print("8888888    contenue     88888888888");
+  //     print(_prof);
+  //     print(_prof!.description);
+  //   });
+  // } 
+  List<ProfessionelSante> prof= [];
+  
+  String erreur = "";
+  bool _loading = false;
+
+  Future<void> getdata() async {
     setState(() {
-      _prof = prof;
-      print("8888888    contenue     88888888888");
-      print(_prof);
-      print(_prof!.description);
+      _loading = true;
     });
+
+    try {
+      UserModel? user = await UserService.infoUser();
+       if(_user !=null){
+        var id_user=user!.id_utilisateur;
+      print("*************************************************"+id_user.toString());
+       //var id_user=user!.id_utilisateur;
+      var data2= await Api.getProfUser(id_user.toString());
+      if ( data2 != null) {
+        print("*********iddddddddddddddddddddddddd prrof");
+       print(prof);
+        prof.clear();
+        for (Map i in data2) {
+          setState(() {
+            prof.add(ProfessionelSante.fromJson(i));
+          });
+          
+        }
+        }
+        print("*********iddddddddddddddddddddddddd prrof");
+    
+        
+        print(prof);
+        setState(() {
+        _loading = false;
+      });
+      }
+    } catch (e) {
+      print("Error: $e");
+      setState(() {
+        erreur = e.toString();
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
+
+
  
  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return _user ==null ?
+        Scaffold(
+          body: Loading(),
+        )
+        :Scaffold(
       backgroundColor: const Color(0xFF7165D6),
        body:
-      // FutureBuilder<Profile?>(
-      //   future: futureProfile,
-      //   builder: (context, snapshot) {
-      //     if (snapshot.connectionState == ConnectionState.waiting) {
-      //       return Center(child: CircularProgressIndicator());
-      //     } else if (snapshot.hasError || !snapshot.hasData) {
-      //       return Center(child: Text('Erreur de chargement du profil'));
-      //     } else {
-      //       final profile = snapshot.data!;
+      
              SingleChildScrollView(
               child: Column(
                 children: [
@@ -168,7 +224,7 @@ class _MyProfileState extends State<MyProfile> {
                             children: [
                               CircleAvatar(
                                 radius: 35,
-                                backgroundImage: (_user != null || _user!.photo != "")
+                                backgroundImage: (_user != null)
                                   ? NetworkImage('https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/profils/${_user!.photo}') as ImageProvider<Object>
                                     :AssetImage('assets/images/profile.png'),
                               ),
@@ -350,7 +406,11 @@ class _MyProfileState extends State<MyProfile> {
                         )
                       : Container(),
                       // proffesionnel
-                      _prof != null ?
+                      (_loading==true) ? Loading()
+                        
+                      : Container(
+                        child: 
+                          prof.isNotEmpty ?
                         Column(
                           children: [
                             const Text(
@@ -362,20 +422,20 @@ class _MyProfileState extends State<MyProfile> {
                         ),
                         const SizedBox(height: 5),
                         ListTile(
-                          leading: CircleAvatar(
+                          leading: 
+                          CircleAvatar(
                                             radius: 35,
-                                            backgroundImage: NetworkImage("https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/profils/${_prof!.photo}"),
+                                            backgroundImage: NetworkImage("https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/profils/${prof[0].photo}"),
 
                                           ),
                           title:  Text(
-                            _prof!.specialite,
+                            prof[0].specialite,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          subtitle: _prof !=null ?
-                          Text(_prof!.description)
-                          :Container(),
+                          subtitle: 
+                          Text(prof[0].description),
                         ),
                           ListTile(
                           leading: Container(
@@ -395,10 +455,8 @@ class _MyProfileState extends State<MyProfile> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          subtitle: _prof !=null ?
-                          Text(_prof!.disponibilite )
-                          
-                          :Container(),
+                          subtitle: 
+                          Text(prof[0].disponibilite),
                         ),ListTile(
                           leading: Container(
                             padding: const EdgeInsets.all(10),
@@ -417,15 +475,13 @@ class _MyProfileState extends State<MyProfile> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          subtitle: _prof !=null ?
-                          Text(_prof!.horaire)
-                          :Container(),
+                          subtitle: 
+                          Text(prof[0].horaire),
                         ),
                           ],
                         )
-                      : Container(),
-                      
-
+                        :Container(),
+                      ),
 
 
 
@@ -657,20 +713,22 @@ class _MyProfileState extends State<MyProfile> {
             child: const Icon(Icons.add_reaction_sharp),
             ),
           ),
-          _user!.role !="professionel"?
+          _user !=null?
           Padding(
             padding: const EdgeInsets.only(bottom: 70.0),
             child: Align(
               alignment: Alignment.bottomRight,
-              child: FloatingActionButton(
+              child: _user!.role !="simple_utilisateur"?
+              FloatingActionButton(
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => Professionel()));
                 },
                 tooltip: 'creer un profil pro',
                 backgroundColor: Colors.greenAccent,
                 foregroundColor: Colors.white,
-                child: const Icon(Icons.add_box, size: 40),
-              ),
+                child: const Icon(Icons.add_circle_outline_sharp, size: 30),
+              )
+              :Container(),
             ),
           )
           :Container(),
@@ -680,5 +738,7 @@ class _MyProfileState extends State<MyProfile> {
 
   
     );
-  }
+
+
+      }
 }

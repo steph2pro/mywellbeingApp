@@ -314,7 +314,7 @@ void addPost(String titre, String type, String contenu, String description, Stri
               TextField(
                 
                 decoration: InputDecoration(
-                  labelText: 'Contenu texte',
+                  labelText: "Contenu de l'actualite",
                   labelStyle: TextStyle(color: Colors.grey[700]),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.blue),

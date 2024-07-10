@@ -58,6 +58,45 @@ class Api{
       print("Erreur de connexion 2: $error");
     }
   }
+  static getProf(String id) async{
+    try{
+      final response=await http.post(Uri.parse(Url.getP),body:{
+        "id": id
+      });
+      print("Donne : ${response.body}");
+      if (response.statusCode == 200) {
+          return jsonDecode(response.body);
+      }else return null;
+      }catch (error) {
+      print("Erreur de connexion 22: $error");
+    }
+  }
+  static getProfUser(String id) async{
+    try{
+      final response=await http.post(Uri.parse(Url.getPuser),body:{
+        "id": id
+      });
+      print("Donne : ${response.body}");
+      if (response.statusCode == 200) {
+          return jsonDecode(response.body);
+      }else return null;
+      }catch (error) {
+      print("Erreur de connexion 22: $error");
+    }
+  }
+static getProfil(String id) async{
+    try{
+      final response=await http.post(Uri.parse(Url.getProfil),body:{
+        "id": id
+      });
+      print("Donne : ${response.body}");
+      if (response.statusCode == 200) {
+          return jsonDecode(response.body);
+      }else return null;
+      }catch (error) {
+      print("Erreur de connexion 22: $error");
+    }
+  }
 }
 
 
@@ -67,4 +106,7 @@ class Url{
   static String getPost="https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/readPost.php";
   static String getMessage="https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/readMessage.php";
   static String getPro="https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/readProf.php";
+  static String getP="https://mywellbeing.000webhostapp.com/my_wellbeing/models/rProf.php";
+  static String getPuser="https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/rProfUser.php";
+  static String getProfil="https://mywellbeing.000webhostapp.com/my_wellbeing/viewmodels/rProfUser.php";
 }

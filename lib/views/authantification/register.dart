@@ -348,24 +348,7 @@ void creationCompte(String nom, String prenom, String email, String pass, String
                         SizedBox(height: 15),
                         Stack(
                           children: <Widget>[
-                             Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  ElevatedButton(
-                                    child: Text("Tester reCAPTCHA"),
-                                    onPressed: () {
-                                      _isCaptchaVerified=true;//_recaptchaV2Controller.show();
-                                    },
-                                  ),
-                                  if (_isCaptchaVerified)
-                                    Text(
-                                      "reCAPTCHA vérifié avec succès !",
-                                      style: TextStyle(color: Colors.green),
-                                    ),
-                                ],
-                              ),
-                            ),
+                            
                             // RecaptchaV2(
                             //   apiKey: "6Lfb5QgqAAAAALy8J5JCLNq5d2wcSlXcoY1TJwER",
                             //   apiSecret: "6Lfb5QgqAAAAANaq8pSBmV8XowRrXLxAEo4IObkR",
@@ -383,8 +366,7 @@ void creationCompte(String nom, String prenom, String email, String pass, String
                         ),
                         SizedBox(height: 15),
                         ElevatedButton(
-                          onPressed: _isCaptchaVerified
-                              ? () {
+                          onPressed:  () {
                                   if (_key.currentState?.validate() ?? false) {
                                     creationCompte(
                                       nomText.value,
@@ -396,7 +378,7 @@ void creationCompte(String nom, String prenom, String email, String pass, String
                                     );
                                   }
                                 }
-                              : null,
+                              ,
                           child: Text(
                             'enregistrer',
                             style: TextStyle(
